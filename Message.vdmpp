@@ -1,0 +1,35 @@
+class Message
+types
+  public String = seq1 of char;
+  public Date = DateUtils`Date;
+values
+-- TODO Define values here
+instance variables
+  protected content: String;
+  protected author: User;
+  protected timestamp: Date;
+ 
+operations
+  public Message: User * String * Date ==> Message
+      Message(MessageAuthor, MessageContent, MessageTimestamp) == (
+        author := MessageAuthor;
+        content := MessageContent;
+        timestamp := MessageTimestamp;
+        return self;
+      )
+      pre MessageContent <> ""
+      post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp;
+
+  pure public getAuthor: () ==> User
+      getAuthor() == return author
+      post RESULT = author;
+  
+  pure public getTimestamp: () ==> Date
+      getTimestamp() == return timestamp
+      post RESULT = timestamp;
+      
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end Message

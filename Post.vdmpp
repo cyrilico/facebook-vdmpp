@@ -1,12 +1,28 @@
 class Post
 types
--- TODO Define types here
+  public String = seq1 of char;
+  public Date = DateUtils`Date;
+  public Permissions = <Public> | <Friends> | <FriendsOfFriends>
 values
 -- TODO Define values here
 instance variables
--- TODO Define instance variables here
+  protected content: String;
+  protected author: User;
+  protected timestamp: Date;
+  protected likes: set of User; --TODO: User can only like post if has permissions to it
+  protected permissions: Permissions;
+  
 operations
--- TODO Define operations here
+  public Post: User * String * Date * Permissions ==> Post
+      Post(PostAuthor, PostContent, PostTimestamp, PostPermissions) == (
+        author := PostAuthor;
+        content := PostContent;
+        timestamp := PostTimestamp;
+        likes := {};
+        permissions := PostPermissions;
+      )
+      pre PostContent <> ""
+      post author = PostAuthor and content = PostContent and timestamp = PostTimestamp and likes = {} and permissions = PostPermissions;
 functions
 -- TODO Define functiones here
 traces

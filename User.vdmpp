@@ -1,12 +1,33 @@
 class User
 types
--- TODO Define types here
+  public String = seq1 of char;
 values
 -- TODO Define values here
 instance variables
--- TODO Define instance variables here
+  protected user: User;
+  protected name: String;
+  protected friends: set of User;
+  protected posts: seq of Post;
+  
+  -- No self friendship
+  inv user not in set friends;
+  -- Friendship goes both ways
+  inv forall friend in set friends & user in set friend.friends;
 operations
--- TODO Define operations here
+  public User: String ==> User
+      User(userName) == (
+        name := userName;
+        friends := {};
+        posts := [];
+        user := self;
+        return self;
+      )
+      pre userName <> ""
+      post name = userName and friends = {} and posts = [];
+  
+  pure public getName: () ==> String
+      getName() == return name
+      post RESULT = name;
 functions
 -- TODO Define functiones here
 traces

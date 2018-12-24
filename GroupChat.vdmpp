@@ -1,12 +1,55 @@
 class GroupChat
 types
--- TODO Define types here
+  public String = seq1 of char;
 values
 -- TODO Define values here
 instance variables
--- TODO Define instance variables here
+  protected name: String;
+  protected members: set1 of User;
+  protected messages: seq of Message;
+  
+  inv forall i1, i2 in set inds messages & i1 > i2 => messages(i1).getTimestamp() <= messages(i2).getTimestamp();
+  
 operations
--- TODO Define operations here
+  public GroupChat: String * set1 of User ==> GroupChat
+      GroupChat(GroupChatName, GroupChatStartingMembers) == (
+        name := GroupChatName;
+        members := GroupChatStartingMembers;
+        messages := [];
+        return self;
+      )
+      pre GroupChatName <> ""
+      post name = GroupChatName and members = GroupChatStartingMembers and messages = [];
+
+  public addMember: User ==> ()
+      addMember(user) == (
+        members := members union {user}
+      )
+      pre user not in set members
+      post members = members~ union {user};
+
+  public removeMember: User ==> ()
+      removeMember(user) == (
+        members := members \ {user}
+      )
+      post members = members~ \ {user};
+
+  public sendMessage: Message ==> ()
+      sendMessage(message) == (
+        messages := messages ^ [message];
+      )
+      pre message.getAuthor() in set members
+      post messages = messages~ ^ [message];
+  
+  --TODO: Can i get some uuuh list comprehension for non integers? (investigate)
+  --public getMessages: [DateUtils`Date] * [DateUtils`Date] ==> seq of Message
+  --    getMessages(startDate, endDate) == (      
+  --    )
+  --    pre startDate = nil <=> endDate = nil;
+  
+  public getMessages: () ==> seq of Message
+      getMessages() == return messages
+      post RESULT == messages;
 functions
 -- TODO Define functiones here
 traces

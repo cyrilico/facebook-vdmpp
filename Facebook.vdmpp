@@ -4,9 +4,18 @@ types
 values
 -- TODO Define values here
 instance variables
--- TODO Define instance variables here
+  public users: set of User := {};
+  private static globalInstance: Facebook := new Facebook();
+  
+  -- User name uniqueness
+  inv not exists user1, user2 in set users & user1 <> user2 and user1.getName() = user2.getName();
 operations
--- TODO Define operations here
+  private Facebook: () ==> Facebook
+    Facebook() == return self
+    post users = {};
+   
+  public pure static getInstance: () ==> Facebook
+    getInstance() == return globalInstance;
 functions
 -- TODO Define functiones here
 traces

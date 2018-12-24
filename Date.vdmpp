@@ -5,7 +5,6 @@ class DateUtils
        inv d == IsValidDate(d div 10000, (d div 100) mod 100, d mod 100);
 
   values
-    public MinDate = MakeDate(1,1,1);
 
   functions
       
