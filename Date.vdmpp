@@ -1,4 +1,4 @@
-class DateUtils
+class Date
 
   types  
     public Date = nat
@@ -43,4 +43,4 @@ class DateUtils
       Day(d) == 
         d mod 100;          
 
-end DateUtils
+end Date

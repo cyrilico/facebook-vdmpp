@@ -9,6 +9,9 @@ instance variables
   
   -- User name uniqueness
   inv not exists user1, user2 in set users & user1 <> user2 and user1.getName() = user2.getName();
+  
+  -- Friendship goes both ways (doesn't work on User class)
+  inv forall user1, user2 in set users & user1 in set user2.friends <=> user2 in set user1.friends;
 operations
   private Facebook: () ==> Facebook
     Facebook() == return self
@@ -16,6 +19,24 @@ operations
    
   public pure static getInstance: () ==> Facebook
     getInstance() == return globalInstance;
+  
+  public addUser: User ==> ()
+    addUser(user) == (
+      users := users union {user}
+    )
+    pre user not in set users
+    post users = users~ union {user};
+  
+  public addFriendship: User * User ==> ()
+    addFriendship(user1, user2) == (
+      dcl u1: User := user1;
+      dcl u2: User := user2;
+      atomic(
+        u1.friends := user1.friends union {user2};
+        u2.friends := user2.friends union {user1}
+      )
+    )
+    pre user1 in set users and user2 in set users
 functions
 -- TODO Define functiones here
 traces

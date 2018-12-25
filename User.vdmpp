@@ -6,13 +6,11 @@ values
 instance variables
   protected user: User;
   protected name: String;
-  protected friends: set of User;
+  public friends: set of User;
   protected posts: seq of Post;
   
   -- No self friendship
   inv user not in set friends;
-  -- Friendship goes both ways
-  inv forall friend in set friends & user in set friend.friends;
 operations
   public User: String ==> User
       User(userName) == (
@@ -28,6 +26,11 @@ operations
   pure public getName: () ==> String
       getName() == return name
       post RESULT = name;
+  
+  public getFriends: () ==> set of User
+      getFriends() == return friends
+      post RESULT = friends;
+  
 functions
 -- TODO Define functiones here
 traces

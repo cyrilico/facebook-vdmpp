@@ -1,7 +1,7 @@
 class Post
 types
   public String = seq1 of char;
-  public Date = DateUtils`Date;
+  public Date = Date`Date;
   public Permissions = <Public> | <Friends> | <FriendsOfFriends>
 values
 -- TODO Define values here
