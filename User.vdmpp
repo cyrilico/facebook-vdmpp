@@ -8,6 +8,7 @@ instance variables
   protected name: String;
   public friends: set of User;
   protected posts: seq of Publication;
+  protected chats: map String to GroupChat;
   
   -- No self friendship
   inv user not in set friends;
@@ -24,6 +25,7 @@ operations
         name := userName;
         friends := {};
         posts := [];
+        chats := {|->};
         user := self;
         return self;
       )
@@ -43,7 +45,7 @@ operations
   			-- Union of friends set with every other friends set from user's friends. Then, exclude itself
   			return {people | people in set friends union dunion {friend.friends | friend in set friends} \ {user} } 
   		)
-  		post card RESULT >= card friends;
+  		post friends subset RESULT and card RESULT >= card friends;
   
   pure public getFriendsTransitiveClosure: () ==> set of User
 			getFriendsTransitiveClosure() ==  (

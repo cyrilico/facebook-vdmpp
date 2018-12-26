@@ -44,8 +44,8 @@ operations
       post messages = messages~ ^ [message];
   
   -- Get chat messages. Optionally, filter by start and/or end date
-  public getMessages: [Date] * [Date] ==> seq of ChatMessage
-      getMessages(startDate, endDate) == (
+  public getMessagesBetween: [Date] * [Date] ==> seq of ChatMessage
+      getMessagesBetween(startDate, endDate) == (
       	return [messages(i) | 
       						i in set inds messages & 
       						messages(i).getTimestamp() >= (if startDate <> nil then startDate else Date`minimumDate) and
@@ -53,7 +53,9 @@ operations
       				 ]     
       )
       pre startDate <> nil and endDate <> nil => startDate <= endDate and startDate >= Date`minimumDate and endDate <= Date`maximumDate;
-
+	
+	public getMessagesWithText: String ==> seq of ChatMessage
+			getMessagesWithText(searchText) == is not yet specified
 functions
 -- TODO Define functiones here
 traces

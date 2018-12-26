@@ -1,7 +1,6 @@
 class ChatMessage is subclass of Message
 types
 values
--- TODO Define values here
 instance variables
 operations
   public ChatMessage: User * String * Date ==> ChatMessage

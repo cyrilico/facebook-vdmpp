@@ -27,6 +27,10 @@ operations
   pure public getTimestamp: () ==> Date
       getTimestamp() == return timestamp
       post RESULT = timestamp;
+  
+  pure public getContent: () ==> String
+  		getContent() == return content
+  		post RESULT = content;
       
 functions
 -- TODO Define functiones here

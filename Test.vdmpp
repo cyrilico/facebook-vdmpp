@@ -1,10 +1,7 @@
 class Test
 types
--- TODO Define types here
 values
--- TODO Define values here
 instance variables
--- TODO Define instance variables here
 operations
 		protected assertTrue: bool ==> ()
 		assertTrue(arg) == 

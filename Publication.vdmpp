@@ -9,7 +9,7 @@ types
 values
 -- TODO Define values here
 instance variables
-  protected likes: set of User; --TODO: User can only like post if has permissions to it
+  protected likes: set of User;
   protected permissions: Permissions;
   
 operations
@@ -25,10 +25,36 @@ operations
       pre PublicationContent <> ""
       post author = PublicationAuthor and content = PublicationContent and timestamp = PublicationTimestamp and likes = {} and permissions = PublicationPermissions;
       
+  public updatePermissions: Permissions ==> ()
+  		updatePermissions(newPermissions) == (
+  			permissions := newPermissions;
+  		)
+  		post permissions = newPermissions;
   
-  pure public getAuthor: () ==> User
-  		getAuthor() == return author
-  		post RESULT = author;
+  pure public getUsersWithPermissions: () ==> set of User
+  		getUsersWithPermissions() == (
+  			cases permissions:
+  			<Public> -> return Facebook`getInstance().getUsers(),
+  			<Friends> -> return author.getFriends() union {author},
+  			<FriendsOfFriends> -> return author.getFriendsOfFriends() union {author},
+  			<TransitiveConnection> -> return author.getFriendsTransitiveClosure() union {author},
+  			others -> return Facebook`getInstance().getUsers()
+  			end
+  		);
+  
+  public like: User ==> ()
+  		like(user) == (
+  			likes := likes union {user}
+  		)
+  		pre user in set getUsersWithPermissions()
+  		post user in set likes and card likes = card likes~ + 1;
+ 	
+ 	public removeLike: User ==> ()
+ 			removeLike(user) == (
+ 				likes := likes \ {user}
+ 			)
+ 			pre user in set likes
+ 			post user not in set likes and card likes = card likes~ - 1;
 functions
 -- TODO Define functiones here
 traces

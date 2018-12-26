@@ -18,6 +18,10 @@ operations
   public pure static getInstance: () ==> Facebook
     getInstance() == return globalInstance;
   
+  public pure getUsers: () ==> set of User
+  		getUsers() == return users
+  		post RESULT = users;
+  
   public addUser: User ==> ()
     addUser(user) == (
       users := users union {user}
