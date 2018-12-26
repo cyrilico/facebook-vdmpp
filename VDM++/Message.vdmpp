@@ -31,6 +31,19 @@ operations
   pure public getContent: () ==> String
   		getContent() == return content
   		post RESULT = content;
+ 	
+	pure public contentContains: String ==> bool
+		contentContains(string) == (
+			dcl msgContent: String := content;
+			
+			while len msgContent >= len string do (
+				if msgContent(1,...,len string) = string
+				then return true
+				else msgContent := tl msgContent
+			);
+			
+			return false
+		)
       
 functions
 -- TODO Define functiones here

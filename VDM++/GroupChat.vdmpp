@@ -44,7 +44,7 @@ operations
       post messages = messages~ ^ [message];
   
   -- Get chat messages. Optionally, filter by start and/or end date
-  public getMessagesBetween: [Date] * [Date] ==> seq of ChatMessage
+  pure public getMessagesBetween: [Date] * [Date] ==> seq of ChatMessage
       getMessagesBetween(startDate, endDate) == (
       	return [messages(i) | 
       						i in set inds messages & 
@@ -54,8 +54,14 @@ operations
       )
       pre startDate <> nil and endDate <> nil => startDate <= endDate and startDate >= Date`minimumDate and endDate <= Date`maximumDate;
 	
-	public getMessagesWithText: String ==> seq of ChatMessage
-			getMessagesWithText(searchText) == is not yet specified
+	-- Get chat messages that contain a search query text
+	pure public getMessagesWithText: String ==> seq of ChatMessage
+			getMessagesWithText(searchText) == (
+				return [messages(i) | 
+      						i in set inds messages & 
+      						messages(i).contentContains(searchText)
+      				 ]    
+			)
 functions
 -- TODO Define functiones here
 traces
