@@ -1,7 +1,9 @@
 class ChatMessage is subclass of Message
 types
 values
+	protected MAX_SIZE = 250; --Private conversation, so smaller messages
 instance variables
+	inv len content <= MAX_SIZE;
 operations
   public ChatMessage: User * String * Date ==> ChatMessage
       ChatMessage(MessageAuthor, MessageContent, MessageTimestamp) == (

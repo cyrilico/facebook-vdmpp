@@ -4,7 +4,7 @@ types
 values
 -- TODO Define values here
 instance variables
-  protected user: User;
+  protected user: User; --Keep a self reference for invariant usage (self is not recognised in that scope)
   protected name: String;
   public friends: set of User;
   protected posts: seq of Publication;
@@ -58,6 +58,19 @@ operations
 					);
 				return closure \ {user}
 			);
+			
+	pure public nameContains: String ==> bool
+			nameContains(string) == (
+				dcl userName: String := name;
+				
+				while len userName >= len string do (
+					if userName(1,...,len string) = string
+					then return true
+					else userName := tl userName
+				);
+				
+				return false
+			)
 functions
 -- TODO Define functiones here
 traces
