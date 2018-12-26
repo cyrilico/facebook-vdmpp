@@ -70,7 +70,14 @@ operations
 				);
 				
 				return false
+			);
+	
+	public makePublication: Publication ==> ()
+			makePublication(publication) == (
+				posts := posts ^ [publication]
 			)
+			pre publication.getTimestamp() > posts(len posts).getTimestamp()
+			post posts = posts~ ^ [publication];
 functions
 -- TODO Define functiones here
 traces
