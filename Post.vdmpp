@@ -2,7 +2,12 @@ class Post
 types
   public String = seq1 of char;
   public Date = Date`Date;
-  public Permissions = <Public> | <Friends> | <FriendsOfFriends>
+  -- Post visibility permissions:
+  -- Public - Anyone can see
+  -- Friends - Only author's friends can see
+  -- FriendsOfFriends - Only author's friends and their friends can see
+  -- TransitiveConnection - Anyone with some eventual connection to the author (i.e. friends set transitive closure) can see
+  public Permissions = <Public> | <Friends> | <FriendsOfFriends> | <TransitiveConnection>
 values
 -- TODO Define values here
 instance variables
@@ -23,6 +28,11 @@ operations
       )
       pre PostContent <> ""
       post author = PostAuthor and content = PostContent and timestamp = PostTimestamp and likes = {} and permissions = PostPermissions;
+      
+  
+  pure public getAuthor: () ==> User
+  		getAuthor() == return author
+  		post RESULT = author;
 functions
 -- TODO Define functiones here
 traces
