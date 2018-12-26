@@ -11,6 +11,13 @@ instance variables
   
   -- No self friendship
   inv user not in set friends;
+  
+  -- Friendship is bidirectional
+  inv forall friend in set friends & user in set friend.friends;
+  
+  -- All of user's posts must be of his authorship
+  -- Same as forall ... getAuthor=user
+  inv not exists publication in seq posts & publication.getAuthor() <> user; 
 operations
   public User: String ==> User
       User(userName) == (
@@ -27,10 +34,28 @@ operations
       getName() == return name
       post RESULT = name;
   
-  public getFriends: () ==> set of User
+  pure public getFriends: () ==> set of User
       getFriends() == return friends
       post RESULT = friends;
   
+  pure public getFriendsOfFriends: () ==> set of User
+  		getFriendsOfFriends() == (
+  			-- Union of friends set with every other friends set from user's friends. Then, exclude itself
+  			return {people | people in set friends union dunion {friend.friends | friend in set friends} \ {user} } 
+  		)
+  		post card RESULT >= card friends;
+  
+  pure public getFriendsTransitiveClosure: () ==> set of User
+			getFriendsTransitiveClosure() ==  (
+				dcl closure : set of User := friends;
+				dcl visited : set of User := {}; 
+				while visited <> closure do 
+					let t in set (closure \ visited) in (
+					closure := closure union t.friends;
+					visited := visited union {t}
+					);
+				return closure \ {user}
+			);
 functions
 -- TODO Define functiones here
 traces

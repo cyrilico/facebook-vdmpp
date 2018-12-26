@@ -10,8 +10,6 @@ instance variables
   -- User name uniqueness
   inv not exists user1, user2 in set users & user1 <> user2 and user1.getName() = user2.getName();
   
-  -- Friendship goes both ways (doesn't work on User class)
-  inv forall user1, user2 in set users & user1 in set user2.friends <=> user2 in set user1.friends;
 operations
   private Facebook: () ==> Facebook
     Facebook() == return self
@@ -26,6 +24,13 @@ operations
     )
     pre user not in set users
     post users = users~ union {user};
+  
+  public addUsers: set of User ==> ()
+    addUsers(newUsers) == (
+      users := users union newUsers
+    )
+    pre newUsers inter users = {}
+    post users = users~ union newUsers;
   
   public addFriendship: User * User ==> ()
     addFriendship(user1, user2) == (
