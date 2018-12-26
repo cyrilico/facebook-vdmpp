@@ -2,14 +2,15 @@ class Date
 
   types  
     public Date = nat
-       inv d == IsValidDate(d div 10000, (d div 100) mod 100, d mod 100);
+       inv d == isValidDate(d div 10000, (d div 100) mod 100, d mod 100);
 
   values
-
+		public minimumDate = makeDate(1,1,1);
+		public maximumDate = makeDate(9999,12,31);
   functions
       
-    public static IsValidDate: nat * nat * nat -> bool
-      IsValidDate(year, month, day) ==
+    public static isValidDate: nat * nat * nat -> bool
+      isValidDate(year, month, day) ==
         year >= 1 and month >= 1 and month <= 12 and day >= 1 and day <= DaysOfMonth(year, month);
     
     public static IsLeapYear: nat -> bool
@@ -26,21 +27,21 @@ class Date
        )
       pre month >= 1 and month <= 12;
 
-    public static MakeDate: nat * nat * nat -> Date
-      MakeDate(year, month, day) == 
+    public static makeDate: nat * nat * nat -> Date
+      makeDate(year, month, day) == 
         year * 10000 + month * 100 + day
-      pre IsValidDate(year, month, day);
+      pre isValidDate(year, month, day);
  
-    public static Year: Date -> nat
-      Year(d) == 
+    public static getYear: Date -> nat
+      getYear(d) == 
         d div 10000;
       
-    public static Month: Date -> nat
-      Month(d) == 
+    public static getMonth: Date -> nat
+      getMonth(d) == 
         (d div 100) mod 100;
       
-    public static Day: Date -> nat
-      Day(d) == 
+    public static getDay: Date -> nat
+      getDay(d) == 
         d mod 100;          
 
 end Date

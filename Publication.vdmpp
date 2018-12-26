@@ -1,0 +1,36 @@
+class Publication is subclass of Message
+types
+  -- Publication visibility permissions:
+  -- Public - Anyone can see
+  -- Friends - Only author's friends can see
+  -- FriendsOfFriends - Only author's friends and their friends can see
+  -- TransitiveConnection - Anyone with some eventual connection to the author (i.e. friends set transitive closure) can see
+  public Permissions = <Public> | <Friends> | <FriendsOfFriends> | <TransitiveConnection>
+values
+-- TODO Define values here
+instance variables
+  protected likes: set of User; --TODO: User can only like post if has permissions to it
+  protected permissions: Permissions;
+  
+operations
+  public Publication: User * String * Date * Permissions ==> Publication
+      Publication(PublicationAuthor, PublicationContent, PublicationTimestamp, PublicationPermissions) == (
+      	author := PublicationAuthor;
+      	content := PublicationContent;
+      	timestamp := PublicationTimestamp;
+      	permissions := PublicationPermissions;
+      	likes := {};
+      	return self;
+      )
+      pre PublicationContent <> ""
+      post author = PublicationAuthor and content = PublicationContent and timestamp = PublicationTimestamp and likes = {} and permissions = PublicationPermissions;
+      
+  
+  pure public getAuthor: () ==> User
+  		getAuthor() == return author
+  		post RESULT = author;
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end Publication

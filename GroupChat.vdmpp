@@ -1,12 +1,13 @@
 class GroupChat
 types
   public String = seq1 of char;
+  public Date = Date`Date;
 values
 -- TODO Define values here
 instance variables
   protected name: String;
   protected members: set1 of User;
-  protected messages: seq of Message;
+  protected messages: seq of ChatMessage;
   
   -- Messages are ordered by timestamp
   inv forall i1, i2 in set inds messages & i1 < i2 => messages(i1).getTimestamp() <= messages(i2).getTimestamp();
@@ -35,22 +36,24 @@ operations
       )
       post members = members~ \ {user};
 
-  public sendMessage: Message ==> ()
+  public sendMessage: ChatMessage ==> ()
       sendMessage(message) == (
         messages := messages ^ [message];
       )
       pre message.getAuthor() in set members
       post messages = messages~ ^ [message];
   
-  --TODO: list comprehension for non integers? (investigate)
-  --public getMessages: [DateUtils`Date] * [DateUtils`Date] ==> seq of Message
-  --    getMessages(startDate, endDate) == (      
-  --    )
-  --    pre startDate = nil <=> endDate = nil;
-  
-  public getMessages: () ==> seq of Message
-      getMessages() == return messages
-      post RESULT = messages;
+  -- Get chat messages. Optionally, filter by start and/or end date
+  public getMessages: [Date] * [Date] ==> seq of ChatMessage
+      getMessages(startDate, endDate) == (
+      	return [messages(i) | 
+      						i in set inds messages & 
+      						messages(i).getTimestamp() >= (if startDate <> nil then startDate else Date`minimumDate) and
+      						messages(i).getTimestamp() <= (if endDate <> nil then endDate else Date`maximumDate)
+      				 ]     
+      )
+      pre startDate <> nil and endDate <> nil => startDate <= endDate and startDate >= Date`minimumDate and endDate <= Date`maximumDate;
+
 functions
 -- TODO Define functiones here
 traces

@@ -7,7 +7,7 @@ instance variables
   protected user: User;
   protected name: String;
   public friends: set of User;
-  protected posts: seq of Post;
+  protected posts: seq of Publication;
   
   -- No self friendship
   inv user not in set friends;

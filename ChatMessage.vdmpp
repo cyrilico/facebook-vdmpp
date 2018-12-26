@@ -1,0 +1,18 @@
+class ChatMessage is subclass of Message
+types
+values
+-- TODO Define values here
+instance variables
+operations
+  public ChatMessage: User * String * Date ==> ChatMessage
+      ChatMessage(MessageAuthor, MessageContent, MessageTimestamp) == (
+        Message(MessageAuthor, MessageContent, MessageTimestamp)
+      )
+      pre MessageContent <> ""
+      post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp;
+      
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end ChatMessage
