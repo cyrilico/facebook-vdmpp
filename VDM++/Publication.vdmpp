@@ -31,14 +31,14 @@ operations
   		)
   		post permissions = newPermissions;
   
-  pure public getUsersWithPermissions: () ==> set of User
-  		getUsersWithPermissions() == (
+  pure public userHasPermissions: User ==> bool
+  		userHasPermissions(user) == (
   			cases permissions:
-  			<Public> -> return Facebook`getInstance().getUsers(),
-  			<Friends> -> return author.getFriends() union {author},
-  			<FriendsOfFriends> -> return author.getFriendsOfFriends() union {author},
-  			<TransitiveConnection> -> return author.getFriendsTransitiveClosure() union {author},
-  			others -> return Facebook`getInstance().getUsers()
+  			<Public> -> return true,
+  			<Friends> -> return user in set author.getFriends() union {author},
+  			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author},
+  			<TransitiveConnection> -> return user in set author.getFriendsTransitiveClosure() union {author},
+  			others -> return true
   			end
   		);
   
@@ -46,7 +46,7 @@ operations
   		like(user) == (
   			likes := likes union {user}
   		)
-  		pre user in set getUsersWithPermissions()
+  		pre userHasPermissions(user)
   		post user in set likes and card likes = card likes~ + 1;
  	
  	public removeLike: User ==> ()
