@@ -11,7 +11,10 @@ operations
   public ChatMessage: User * String * Date ==> ChatMessage
       ChatMessage(MessageAuthor, MessageContent, MessageTimestamp) == (
       	idCounter := idCounter + 1;
-        Message(MessageAuthor, MessageContent, MessageTimestamp)
+        author := MessageAuthor;
+        content := MessageContent;
+        timestamp := MessageTimestamp;
+        return self;
       )
       pre MessageContent <> ""
       post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp and idCounter = idCounter~ + 1;

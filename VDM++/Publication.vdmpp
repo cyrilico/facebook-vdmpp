@@ -18,9 +18,12 @@ operations
   public Publication: User * String * Date * Permissions ==> Publication
       Publication(PublicationAuthor, PublicationContent, PublicationTimestamp, PublicationPermissions) == (
       	idCounter := idCounter + 1;
+      	author := PublicationAuthor;
+        content := PublicationContent;
+        timestamp := PublicationTimestamp;
       	permissions := PublicationPermissions;
       	likes := {};
-      	Message(PublicationAuthor, PublicationContent, PublicationTimestamp);
+      	return self;
       )
       pre PublicationContent <> ""
       post idCounter = idCounter~ + 1 and author = PublicationAuthor and content = PublicationContent and timestamp = PublicationTimestamp and likes = {} and permissions = PublicationPermissions;

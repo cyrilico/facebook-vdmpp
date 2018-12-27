@@ -10,16 +10,6 @@ instance variables
   protected timestamp: Date;
  
 operations
-  public Message: User * String * Date ==> Message
-      Message(MessageAuthor, MessageContent, MessageTimestamp) == (
-        author := MessageAuthor;
-        content := MessageContent;
-        timestamp := MessageTimestamp;
-        return self;
-      )
-      pre MessageContent <> ""
-      post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp;
-
   pure public getAuthor: () ==> User
       getAuthor() == return author
       post RESULT = author;
