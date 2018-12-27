@@ -94,6 +94,19 @@ operations
   		)
   		pre searcher in set users
   		post forall publication in set RESULT & exists i,j in set inds publication.getContent() & publication.getContent()(i,...,j) = searchText;
+
+	--TODO ChatMessage search operations (here or in User class?)
+	
+	public getUserTimeline: User * User ==> seq of Publication
+			getUserTimeline(searcher, user) == return user.getPublications(searcher)
+			pre {user, searcher} subset users;
+	
+	--TODO "Magic" feed method that sorts all viewable content by relevance (sort criteria = ?)
+	--Don't forget post condition (still TBD)
+	public getUserFeed: User ==> seq of Publication
+			getUserFeed(user) == is not yet specified
+			pre user in set users;
+			
 functions
 -- TODO Define functiones here
 traces
