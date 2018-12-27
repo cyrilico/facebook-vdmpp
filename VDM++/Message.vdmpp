@@ -24,7 +24,7 @@ operations
  	
 	pure public contentContains: String ==> bool
 		contentContains(string) == (
-			dcl msgContent: String := content;
+			dcl msgContent: seq of char := content;
 			
 			while len msgContent >= len string do (
 				if msgContent(1,...,len string) = string

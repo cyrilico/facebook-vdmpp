@@ -8,7 +8,7 @@ instance variables
   protected name: String;
   public friends: set of User;
   protected posts: seq of Publication;
-  protected chats: map String to GroupChat;
+  protected chats: inmap String to GroupChat;
   
   -- No self friendship
   inv user not in set friends;
@@ -64,11 +64,13 @@ operations
 				return closure \ {user}
 			);
 			
-	pure public nameContains: String ==> bool
+	public nameContains: String ==> bool
 			nameContains(string) == (
-				dcl userName: String := name;
+				--seq of char instead of string because, if not found, can eventually become empty string
+				--and String is defined as seq1 of char
+				dcl userName: seq of char := name;
 				
-				while len userName >= len string do (
+				while userName <> "" do (
 					if userName(1,...,len string) = string
 					then return true
 					else userName := tl userName
@@ -89,7 +91,14 @@ operations
 			updatePublicationPermissions(publicationId, newPermissions) == (
 				let index = iota i in set inds posts & posts(i).getId() = publicationId in posts(index).updatePermissions(newPermissions)
 			)
+			pre exists1 index in set inds posts & posts(index).getId() = publicationId;
+	
+	public deletePublication: nat1 ==> ()
+			deletePublication(publicationId) == (
+				posts := [posts(i) | i in set inds posts & posts(i).getId() <> publicationId]
+			)
 			pre exists1 index in set inds posts & posts(index).getId() = publicationId
+			post not exists index in set inds posts & posts(index).getId() = publicationId;
 functions
 -- TODO Define functiones here
 traces
