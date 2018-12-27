@@ -3,15 +3,22 @@ types
 values
 	protected MAX_SIZE = 250; --Private conversation, so smaller messages
 instance variables
+	protected static idCounter: nat1 := 1;
+	protected id: nat1 := idCounter;
+	
 	inv len content <= MAX_SIZE;
 operations
   public ChatMessage: User * String * Date ==> ChatMessage
       ChatMessage(MessageAuthor, MessageContent, MessageTimestamp) == (
+      	idCounter := idCounter + 1;
         Message(MessageAuthor, MessageContent, MessageTimestamp)
       )
       pre MessageContent <> ""
-      post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp;
+      post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp and idCounter = idCounter~ + 1;
       
+      pure public getId: () ==> nat1
+  		getId() == return id
+  		post RESULT = id;
 functions
 -- TODO Define functiones here
 traces

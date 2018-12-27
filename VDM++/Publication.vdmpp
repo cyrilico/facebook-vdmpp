@@ -9,22 +9,26 @@ types
 values
 -- TODO Define values here
 instance variables
+	protected static idCounter: nat1 := 1;
+	protected id: nat1 := idCounter;
   protected likes: set of User;
   protected permissions: Permissions;
   
 operations
   public Publication: User * String * Date * Permissions ==> Publication
       Publication(PublicationAuthor, PublicationContent, PublicationTimestamp, PublicationPermissions) == (
-      	author := PublicationAuthor;
-      	content := PublicationContent;
-      	timestamp := PublicationTimestamp;
+      	idCounter := idCounter + 1;
       	permissions := PublicationPermissions;
       	likes := {};
-      	return self;
+      	Message(PublicationAuthor, PublicationContent, PublicationTimestamp);
       )
       pre PublicationContent <> ""
-      post author = PublicationAuthor and content = PublicationContent and timestamp = PublicationTimestamp and likes = {} and permissions = PublicationPermissions;
+      post idCounter = idCounter~ + 1 and author = PublicationAuthor and content = PublicationContent and timestamp = PublicationTimestamp and likes = {} and permissions = PublicationPermissions;
       
+  pure public getId: () ==> nat1
+  		getId() == return id
+  		post RESULT = id;
+  		
   public updatePermissions: Permissions ==> ()
   		updatePermissions(newPermissions) == (
   			permissions := newPermissions;

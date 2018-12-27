@@ -78,6 +78,12 @@ operations
 			)
 			pre publication.getTimestamp() > posts(len posts).getTimestamp()
 			post posts = posts~ ^ [publication];
+	
+	public updatePublicationPermissions: nat1 * Publication`Permissions ==> ()
+			updatePublicationPermissions(publicationId, newPermissions) == (
+				let index = iota i in set inds posts & posts(i).getId() = publicationId in posts(index).updatePermissions(newPermissions)
+			)
+			pre exists1 index in set inds posts & posts(index).getId() = publicationId
 functions
 -- TODO Define functiones here
 traces
