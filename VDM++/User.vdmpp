@@ -72,11 +72,12 @@ operations
 				return false
 			);
 	
+	--TODO: Pass content, timestamp and permissions instead, building Publication object JIT?
 	public makePublication: Publication ==> ()
 			makePublication(publication) == (
 				posts := posts ^ [publication]
 			)
-			pre publication.getTimestamp() > posts(len posts).getTimestamp()
+			pre len posts > 0 => publication.getTimestamp() > posts(len posts).getTimestamp()
 			post posts = posts~ ^ [publication];
 	
 	public updatePublicationPermissions: nat1 * Publication`Permissions ==> ()
