@@ -1,6 +1,6 @@
 class Facebook
 types
--- TODO Define types here
+	public String = seq1 of char;
 values
 -- TODO Define values here
 instance variables
@@ -46,6 +46,24 @@ operations
       )
     )
     pre user1 in set users and user2 in set users
+    post user1 in set user2.friends and user2 in set user1.friends;
+  
+  public removeFriendship: User * User ==> ()
+  	removeFriendship(user1, user2) == (
+  		dcl u1: User := user1;
+      dcl u2: User := user2;
+      atomic(
+        u1.friends := user1.friends \ {user2};
+        u2.friends := user2.friends \ {user1}
+      )
+  	)
+  	pre user1 in set users and user2 in set users
+  	post user1 not in set user2.friends and user2 not in set user1.friends;
+  
+  public searchUser: String ==> set of User
+  		searchUser(searchText) == (
+  			return {user | user in set users & user.nameContains(searchText)}
+  		)
 functions
 -- TODO Define functiones here
 traces
