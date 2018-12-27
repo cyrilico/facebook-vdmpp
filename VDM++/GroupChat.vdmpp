@@ -22,7 +22,14 @@ operations
       )
       pre GroupChatName <> ""
       post name = GroupChatName and members = GroupChatStartingMembers and messages = [];
-
+	
+	pure public getName: () ==> String
+			getName() == return name
+			post RESULT = name;
+	
+	pure public getMembers: () ==> set1 of User
+			getMembers() == return members;
+			
   public addMember: User ==> ()
       addMember(user) == (
         members := members union {user}
@@ -34,6 +41,7 @@ operations
       removeMember(user) == (
         members := members \ {user}
       )
+      pre user in set members
       post members = members~ \ {user};
 
   public sendMessage: ChatMessage ==> ()

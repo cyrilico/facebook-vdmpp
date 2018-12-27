@@ -36,6 +36,13 @@ operations
       getName() == return name
       post RESULT = name;
   
+  pure public getChats: () ==> set of GroupChat
+  		getChats() == return rng chats
+  		post forall chat in set RESULT & chat.getName() in set dom chats;
+  
+  pure public getChatByName: String ==> GroupChat
+  		getChatByName(chatName) == return chats(chatName);
+  
   pure public getPublications: User ==> seq of Publication
   		getPublications(searcher) == (
   			return [posts(i) | i in set inds posts & posts(i).userHasPermissions(searcher)]
@@ -62,7 +69,8 @@ operations
 					visited := visited union {t}
 					);
 				return closure \ {user}
-			);
+			)
+			post friends subset RESULT and card RESULT >= card friends;
 			
 	public nameContains: String ==> bool
 			nameContains(string) == (
@@ -98,6 +106,48 @@ operations
 			)
 			pre exists1 index in set inds posts & posts(index).getId() = publicationId
 			post not exists index in set inds posts & posts(index).getId() = publicationId;
+	
+	-- When user creates chat
+	public createGroupChat: String * set of User ==> ()
+			createGroupChat(chatName, initialMembers) == (
+				--let expression so group chat reference is the same for all users
+				let newChat = new GroupChat(chatName, initialMembers union {self}) in (
+					chats := chats munion {chatName |-> newChat};
+					for all member in set initialMembers do
+						member.addGroupChat(newChat);
+					)
+			)
+			pre chatName not in set dom chats
+			post chatName in set dom chats;
+	
+	public addFriendToChat: User * String ==> ()
+			addFriendToChat(friend, chatName) == (
+				friend.addGroupChat(chats(chatName))
+			)
+			pre friend in set friends and chatName in set dom chats;
+			--TODO post condition
+	
+	-- When user is added to an existing chat
+	public addGroupChat: GroupChat ==> ()
+			addGroupChat(chat) == (
+				chats := chats munion {chat.getName() |-> chat};
+			)
+			pre chat.getName() not in set dom chats
+			post chat.getName() in set dom chats;
+	
+	public leaveGroupChat: String ==> ()
+			leaveGroupChat(chatName) == (
+				chats(chatName).removeMember(self);
+				chats := {chatName} <-: chats;
+			)
+			pre chatName in set dom chats
+			post chatName not in set dom chats;
+	
+	public sendChatMessage: String * ChatMessage`String * ChatMessage`Date ==> ()
+			sendChatMessage(chatName, content, timestamp) == (
+				chats(chatName).sendMessage(new ChatMessage(user, content, timestamp));
+			)
+			pre chatName in set dom chats;
 functions
 -- TODO Define functiones here
 traces
