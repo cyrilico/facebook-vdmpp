@@ -18,9 +18,29 @@ operations
   public pure static getInstance: () ==> Facebook
     getInstance() == return globalInstance;
   
+  public static clearInstance: () ==> Facebook
+  	clearInstance() == (
+  		globalInstance := new Facebook();
+  		return getInstance()
+  	);
+  
   public pure getUsers: () ==> set of User
   		getUsers() == return users
   		post RESULT = users;
+  		
+  public pure getUserByName: String ==> [User]
+  		getUserByName(name) == (
+  			dcl result: [User] := nil;
+  			
+				for all user in set users do
+					if user.getName() = name then
+						result := user
+					else 
+						skip;
+		
+				return result
+  		)
+  		post (exists user in set users & user.getName() = name) => RESULT <> nil;
   
   public addUser: User ==> ()
     addUser(user) == (
@@ -63,8 +83,8 @@ operations
   public searchUser: String ==> set of User
   		searchUser(searchText) == (
   			return {user | user in set users & user.nameContains(searchText)}
-  		);
-  		--TODO post condition
+  		)
+  		post forall user in set RESULT & exists i,j in set inds user.getName() & user.getName()(i,...,j) = searchText;
   
   public searchPublications: User * String ==> set of Publication
   		searchPublications(searcher, searchText) == (
@@ -72,8 +92,8 @@ operations
   				publication in set dunion {elems user.getPublications(searcher) | user in set users} 
   				& publication.contentContains(searchText)} 
   		)
-  		pre searcher in set users;
-  		--TODO post condition
+  		pre searcher in set users
+  		post forall publication in set RESULT & exists i,j in set inds publication.getContent() & publication.getContent()(i,...,j) = searchText;
 functions
 -- TODO Define functiones here
 traces
