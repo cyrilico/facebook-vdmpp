@@ -63,7 +63,17 @@ operations
   public searchUser: String ==> set of User
   		searchUser(searchText) == (
   			return {user | user in set users & user.nameContains(searchText)}
+  		);
+  		--TODO post condition
+  
+  public searchPublications: User * String ==> set of Publication
+  		searchPublications(searcher, searchText) == (
+  			return {publication | 
+  				publication in set dunion {elems user.getPublications(searcher) | user in set users} 
+  				& publication.contentContains(searchText)} 
   		)
+  		pre searcher in set users;
+  		--TODO post condition
 functions
 -- TODO Define functiones here
 traces

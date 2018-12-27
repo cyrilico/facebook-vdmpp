@@ -36,6 +36,11 @@ operations
       getName() == return name
       post RESULT = name;
   
+  pure public getPublications: User ==> seq of Publication
+  		getPublications(searcher) == (
+  			return [posts(i) | i in set inds posts & posts(i).userHasPermissions(searcher)]
+  		);
+  		
   pure public getFriends: () ==> set of User
       getFriends() == return friends
       post RESULT = friends;
