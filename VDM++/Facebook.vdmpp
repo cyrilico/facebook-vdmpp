@@ -105,6 +105,12 @@ operations
 			getUserFeed(user) == is not yet specified
 			pre user in set users;
 			
+	public getCommonFriends: User * User ==> set of User
+			getCommonFriends(user1, user2) == return user1.friends inter user2.friends
+			pre {user1, user2} subset users and user1 <> user2
+			post RESULT subset user1.friends and RESULT subset user2.friends;
+			--TODO improve post condition
+			
 functions
 -- TODO Define functiones here
 traces
