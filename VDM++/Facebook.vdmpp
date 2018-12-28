@@ -65,7 +65,7 @@ operations
         u2.friends := user2.friends union {user1}
       )
     )
-    pre user1 in set users and user2 in set users
+    pre user1 in set users and user2 in set users and user1 not in set user2.getBlockedUsers() and user2 not in set user1.getBlockedUsers()
     post user1 in set user2.friends and user2 in set user1.friends;
   
   public removeFriendship: User * User ==> ()
