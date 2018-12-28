@@ -2,11 +2,10 @@ class TestFacebook is subclass of Test
 
 instance variables
 	face : Facebook := Facebook`getInstance();
-	user1 : User := new User("john");
-	user2 : User := new User("maria");
-	user3 : User;
-	user4 : User;
-	user5: User;
+	user1 : User := new User("user1");
+	user2 : User := new User("user2");
+	user3 : User := new User("user3");
+	user4 : User := new User("user4");
 	
 operations
 	protected Setup: () ==> ()
@@ -15,9 +14,6 @@ operations
 	protected testAddFriendships: () ==> ()
 		testAddFriendships() == (
 		
-				user3:= new User("pedro");
-				user4 := new User("rita");
-				
 				face.getInstance().addUsers({user1, user2, user3, user4});
 				
 				face.getInstance().addFriendship(user1, user2);
@@ -29,12 +25,33 @@ operations
 				assertEqual(card user3.getFriends(), 1);	
 				assertEqual(card user4.getFriends(), 1);		
 		);
+		
+	protected testCommonFriends: () ==> ()
+		testCommonFriends() == (
+		
+				face.getInstance().addUsers({user1, user2, user3, user4});
+				
+				-- user1 has 3 friends: user2, user3, and user4
+				face.getInstance().addFriendship(user1, user2);
+				face.getInstance().addFriendship(user1, user3);
+				face.getInstance().addFriendship(user1, user4);
+				
+				-- user2 has 2 friends: user1, and user4
+				face.getInstance().addFriendship(user2, user4);
+				
+				assertEqual(face.getCommonFriends(user1, user2), {user4});
+				assertEqual(card face.getCommonFriends(user1, user2), 1);				
+		);
 			
 	public Run: () ==> ()
 			Run() == (
 				IO`println("\nRunning Facebook Tests\n");
 				
 				testAddFriendships();
+				face := Facebook`clearInstance();
+				
+				testCommonFriends();
+				face := Facebook`clearInstance();
 				
 				IO`println("\nFacebook Tests ran successfully\n");
 			);
