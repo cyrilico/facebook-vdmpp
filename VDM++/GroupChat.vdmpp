@@ -6,7 +6,7 @@ values
 -- TODO Define values here
 instance variables
   protected name: String;
-  protected members: set1 of User;
+  protected members: set of User;
   protected messages: seq of ChatMessage;
   
   -- Messages are ordered by timestamp

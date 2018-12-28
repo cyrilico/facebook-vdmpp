@@ -117,23 +117,23 @@ operations
 						member.addGroupChat(newChat);
 					)
 			)
-			pre chatName not in set dom chats
+			pre chatName not in set dom chats and initialMembers subset friends
 			post chatName in set dom chats;
 	
-	public addFriendToChat: User * String ==> ()
-			addFriendToChat(friend, chatName) == (
-				friend.addGroupChat(chats(chatName))
-			)
-			pre friend in set friends and chatName in set dom chats;
-			--TODO post condition
-	
 	-- When user is added to an existing chat
-	public addGroupChat: GroupChat ==> ()
+	protected addGroupChat: GroupChat ==> ()
 			addGroupChat(chat) == (
 				chats := chats munion {chat.getName() |-> chat};
 			)
 			pre chat.getName() not in set dom chats
 			post chat.getName() in set dom chats;
+	
+	public addFriendToChat: User * String ==> ()
+			addFriendToChat(friend, chatName) == (
+				friend.addGroupChat(chats(chatName))
+			)
+			pre friend in set friends and chatName in set dom chats
+			post exists1 cName in set {chat.getName() | chat in set friend.getChats()} & cName = chatName;
 	
 	public leaveGroupChat: String ==> ()
 			leaveGroupChat(chatName) == (
