@@ -7,14 +7,18 @@ instance variables
   protected user: User; --Keep a self reference for invariant usage (self is not recognised in that scope)
   protected name: String;
   public friends: set of User;
+  protected blocked: set of User;
   protected posts: seq of Publication;
   protected chats: inmap String to GroupChat;
   
-  -- No self friendship
-  inv user not in set friends;
+  -- No self friendship nor self blocking
+  inv user not in set friends and user not in set blocked;
   
   -- Friendship is bidirectional
   inv forall friend in set friends & user in set friend.friends;
+  
+  -- No friends can on the blocked list
+  inv blocked inter friends = {};
   
   -- All of user's posts must be of his authorship
   -- Same as forall ... getAuthor=user
@@ -27,6 +31,7 @@ operations
       User(userName) == (
         name := userName;
         friends := {};
+        blocked := {};
         posts := [];
         chats := {|->};
         user := self;
@@ -54,6 +59,10 @@ operations
   pure public getFriends: () ==> set of User
       getFriends() == return friends
       post RESULT = friends;
+  
+  pure public getBlockedUsers: () ==> set of User
+  		getBlockedUsers() == return blocked
+  		post RESULT = blocked;
   
   pure public getFriendsOfFriends: () ==> set of User
   		getFriendsOfFriends() == (
@@ -164,6 +173,19 @@ operations
 				return chats(chatName).getMessagesBetween(beginningDate, endDate);
 			)
 			pre chatName in set dom chats;
+	
+	public blockUser: User ==> ()
+			blockUser(userBlocked) == (
+				blocked := blocked union {userBlocked};
+			)
+			post card blocked = card blocked~ + 1;
+	
+	public unblockUser: User ==> ()
+			unblockUser(userBlocked) == (
+				blocked := blocked \ {userBlocked};
+			)
+			pre userBlocked in set blocked;
+	
 functions
 -- TODO Define functiones here
 traces

@@ -41,11 +41,11 @@ operations
   pure public userHasPermissions: User ==> bool
   		userHasPermissions(user) == (
   			cases permissions:
-  			<Public> -> return true,
-  			<Friends> -> return user in set author.getFriends() union {author},
-  			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author},
-  			<TransitiveConnection> -> return user in set author.getFriendsTransitiveClosure() union {author},
-  			others -> return true
+  			<Public> -> return user not in set author.getBlockedUsers(),
+  			<Friends> -> return user in set author.getFriends() union {author} \ author.getBlockedUsers(),
+  			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author} \ author.getBlockedUsers(),
+  			<TransitiveConnection> -> return user in set author.getFriendsTransitiveClosure() union {author} \ author.getBlockedUsers(),
+  			others -> return user not in set author.getBlockedUsers()
   			end
   		);
   
