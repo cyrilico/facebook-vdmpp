@@ -27,7 +27,7 @@ operations
 			getName() == return name
 			post RESULT = name;
 	
-	pure public getMembers: () ==> set1 of User
+	pure public getMembers: () ==> set of User
 			getMembers() == return members;
 			
   public addMember: User ==> ()

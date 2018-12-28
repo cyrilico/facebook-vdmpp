@@ -19,6 +19,9 @@ instance variables
   -- All of user's posts must be of his authorship
   -- Same as forall ... getAuthor=user
   inv not exists publication in seq posts & publication.getAuthor() <> user; 
+  
+  -- User is a member in all of the group chats he has stored
+  inv forall chat in set rng chats & user in set chat.getMembers();
 operations
   public User: String ==> User
       User(userName) == (
@@ -123,6 +126,7 @@ operations
 	-- When user is added to an existing chat
 	protected addGroupChat: GroupChat ==> ()
 			addGroupChat(chat) == (
+				chat.addMember(self);
 				chats := chats munion {chat.getName() |-> chat};
 			)
 			pre chat.getName() not in set dom chats
@@ -146,6 +150,18 @@ operations
 	public sendChatMessage: String * ChatMessage`String * ChatMessage`Date ==> ()
 			sendChatMessage(chatName, content, timestamp) == (
 				chats(chatName).sendMessage(new ChatMessage(user, content, timestamp));
+			)
+			pre chatName in set dom chats;
+	
+	public searchTextInChat: String * String ==> seq of ChatMessage
+			searchTextInChat(chatName, searchText) == (
+				return chats(chatName).getMessagesWithText(searchText);
+			)
+			pre chatName in set dom chats;
+	
+	public filterDateInChat: String * [Date] * [Date] ==> seq of ChatMessage
+			filterDateInChat(chatName, beginningDate, endDate) == (
+				return chats(chatName).getMessagesBetween(beginningDate, endDate);
 			)
 			pre chatName in set dom chats;
 functions
