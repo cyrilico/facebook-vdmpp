@@ -102,7 +102,14 @@ operations
 	--TODO "Magic" feed method that sorts all viewable content by relevance (sort criteria = ?)
 	--Don't forget post condition (still TBD)
 	public getUserFeed: User ==> seq of Publication
-			getUserFeed(user) == is not yet specified
+			getUserFeed(user) == (
+				-- Retrieve all (visible) publications that either 1) are from a friend or 2) one or more friends have liked
+				dcl allPublications: set of Publication := {	publication | 
+																												publication in set dunion {elems getUserTimeline(user, member) | member in set users}
+																												& publication.getAuthor() in set user.friends or card (publication.getLikes() inter user.friends) > 0
+																									 	};
+				return [];
+			)
 			pre user in set users;
 			
 	public getCommonFriends: User * User ==> set of User
