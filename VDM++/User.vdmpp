@@ -132,7 +132,7 @@ operations
 			addFriendToChat(friend, chatName) == (
 				friend.addGroupChat(chats(chatName))
 			)
-			pre friend in set friends and chatName in set dom chats
+			pre friend in set friends and chatName in set dom chats and not exists cName in set {chat.getName() | chat in set friend.getChats()} & cName = chatName
 			post exists1 cName in set {chat.getName() | chat in set friend.getChats()} & cName = chatName;
 	
 	public leaveGroupChat: String ==> ()
