@@ -94,8 +94,6 @@ operations
   		)
   		pre searcher in set users
   		post forall publication in set RESULT & exists i,j in set inds publication.getContent() & publication.getContent()(i,...,j) = searchText;
-
-	--TODO ChatMessage search operations (here or in User class?)
 	
 	public getUserTimeline: User * User ==> seq of Publication
 			getUserTimeline(searcher, user) == return user.getPublications(searcher)
