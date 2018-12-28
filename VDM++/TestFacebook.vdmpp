@@ -1,16 +1,41 @@
 class TestFacebook is subclass of Test
 
 instance variables
+	face : Facebook := Facebook`getInstance();
+	user1 : User := new User("john");
+	user2 : User := new User("maria");
+	user3 : User;
+	user4 : User;
+	user5: User;
 	
 operations
 	protected Setup: () ==> ()
 			Setup() == is not yet specified;
 			
+	protected testAddFriendships: () ==> ()
+		testAddFriendships() == (
+		
+				user3:= new User("pedro");
+				user4 := new User("rita");
+				
+				face.getInstance().addUsers({user1, user2, user3, user4});
+				
+				face.getInstance().addFriendship(user1, user2);
+				face.getInstance().addFriendship(user1, user3);
+				face.getInstance().addFriendship(user1, user4);
+		
+				assertEqual(card user1.getFriends(), 3);			
+				assertEqual(card user2.getFriends(), 1);	
+				assertEqual(card user3.getFriends(), 1);	
+				assertEqual(card user4.getFriends(), 1);		
+		);
+			
 	public Run: () ==> ()
 			Run() == (
 				IO`println("\nRunning Facebook Tests\n");
-								
-					
+				
+				testAddFriendships();
+				
 				IO`println("\nFacebook Tests ran successfully\n");
 			);
 
