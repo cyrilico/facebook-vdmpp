@@ -2,6 +2,7 @@ class Test
 types
 values
 instance variables
+	public facebook: Facebook := Facebook`getInstance();
 operations
 		protected assertTrue: bool ==> ()
 		assertTrue(arg) == 

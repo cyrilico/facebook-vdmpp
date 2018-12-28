@@ -1,0 +1,17 @@
+class TestFacebook is subclass of Test
+
+instance variables
+	
+operations
+	protected Setup: () ==> ()
+			Setup() == is not yet specified;
+			
+	public Run: () ==> ()
+			Run() == (
+				IO`println("\nRunning Facebook Tests\n");
+								
+					
+				IO`println("\nFacebook Tests ran successfully\n");
+			);
+
+end TestFacebook
