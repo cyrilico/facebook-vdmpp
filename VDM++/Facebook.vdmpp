@@ -129,7 +129,9 @@ operations
 				dcl sorted_list: seq of PublicationRank := publications;
 				for i = len publications to 1 by -1 do 
 					for j = 1 to i-1 do 
-						if sorted_list(j).score < sorted_list(j+1).score then 
+						if sorted_list(j).score > sorted_list(j+1).score 
+							 or sorted_list(j).score = sorted_list(j+1).score
+							 and sorted_list(j).publication.getTimestamp() > sorted_list(j+1).publication.getTimestamp() then 
 							(dcl temp: PublicationRank := sorted_list(j); 
 							sorted_list(j) := sorted_list(j+1); 
 							sorted_list(j+1) := temp

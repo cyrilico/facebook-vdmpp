@@ -69,7 +69,7 @@ operations
  	
  	public calculateScore: User ==> rat
  			calculateScore(user) == (
- 				return len content; --TODO Actually do score
+ 				return card likes * (1 + card (likes inter user.friends)) * (if user in set author.friends then 2 else 1); 
  			)
  			pre user <> author
  			post RESULT >= 0;
