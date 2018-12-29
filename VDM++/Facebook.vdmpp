@@ -1,6 +1,8 @@
 class Facebook
 types
 	public String = seq1 of char;
+	protected PublicationRank :: publication: Publication
+															 score: nat;
 values
 -- TODO Define values here
 instance variables
@@ -18,10 +20,9 @@ operations
   public pure static getInstance: () ==> Facebook
     getInstance() == return globalInstance;
   
-  public static clearInstance: () ==> Facebook
+  public static clearInstance: () ==> ()
   	clearInstance() == (
   		globalInstance := new Facebook();
-  		return getInstance()
   	);
   
   public pure getUsers: () ==> set of User
@@ -99,16 +100,21 @@ operations
 			getUserTimeline(searcher, user) == return user.getPublications(searcher)
 			pre {user, searcher} subset users;
 	
-	--TODO "Magic" feed method that sorts all viewable content by relevance (sort criteria = ?)
+	--TODO "Magic" feed method that sorts all viewable content by relevance
 	--Don't forget post condition (still TBD)
 	public getUserFeed: User ==> seq of Publication
 			getUserFeed(user) == (
 				-- Retrieve all (visible) publications that either 1) are from a friend or 2) one or more friends have liked
-				dcl allPublications: set of Publication := {	publication | 
-																												publication in set dunion {elems getUserTimeline(user, member) | member in set users}
+				dcl allPublications: set of Publication := {publication | 
+																												publication in set dunion {elems getUserTimeline(user, member) | member in set users & user <> member}
 																												& publication.getAuthor() in set user.friends or card (publication.getLikes() inter user.friends) > 0
 																									 	};
-				return [];
+
+				dcl seqOfPubs: seq of PublicationRank := [];
+				for all publication in set allPublications do
+					seqOfPubs := seqOfPubs ^ [mk_PublicationRank(publication, publication.calculateScore(user))];
+					
+				return sortPublications(seqOfPubs);
 			)
 			pre user in set users;
 			
@@ -116,10 +122,21 @@ operations
 			getCommonFriends(user1, user2) == return user1.friends inter user2.friends
 			pre {user1, user2} subset users and user1 <> user2
 			post RESULT subset user1.friends and RESULT subset user2.friends;
-			--TODO improve post condition
-			
+	
+	
+	protected sortPublications: seq of PublicationRank ==> seq of Publication
+			sortPublications(publications) == (
+				dcl sorted_list: seq of PublicationRank := publications;
+				for i = len publications to 1 by -1 do 
+					for j = 1 to i-1 do 
+						if sorted_list(j).score < sorted_list(j+1).score then 
+							(dcl temp: PublicationRank := sorted_list(j); 
+							sorted_list(j) := sorted_list(j+1); 
+							sorted_list(j+1) := temp
+							); 
+				return [sorted_list(i).publication | i in set inds sorted_list];
+				);  
 functions
--- TODO Define functiones here
 traces
 -- TODO Define Combinatorial Test Traces here
 end Facebook

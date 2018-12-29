@@ -42,9 +42,9 @@ operations
   		userHasPermissions(user) == (
   			cases permissions:
   			<Public> -> return user not in set author.getBlockedUsers(),
-  			<Friends> -> return user in set author.getFriends() union {author} \ author.getBlockedUsers(),
-  			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author} \ author.getBlockedUsers(),
-  			<TransitiveConnection> -> return user in set author.getFriendsTransitiveClosure() union {author} \ author.getBlockedUsers(),
+  			<Friends> -> return user in set author.getFriends() union {author},
+  			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author},
+  			<TransitiveConnection> -> return user in set author.getFriendsTransitiveClosure() union {author},
   			others -> return user not in set author.getBlockedUsers()
   			end
   		);
@@ -66,6 +66,13 @@ operations
  			)
  			pre user in set likes
  			post user not in set likes and card likes = card likes~ - 1;
+ 	
+ 	public calculateScore: User ==> rat
+ 			calculateScore(user) == (
+ 				return len content; --TODO Actually do score
+ 			)
+ 			pre user <> author
+ 			post RESULT >= 0;
 functions
 -- TODO Define functiones here
 traces

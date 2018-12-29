@@ -1,57 +1,33 @@
 class TestFacebook is subclass of Test
 
 instance variables
-	face : Facebook := Facebook`getInstance();
-	user1 : User := new User("user1");
-	user2 : User := new User("user2");
-	user3 : User := new User("user3");
-	user4 : User := new User("user4");
+	u1 : User := new User("user1");
+	u2 : User := new User("user2");
+	u3 : User := new User("user3");
+	u4 : User := new User("user4");
 	
 operations
-	protected Setup: () ==> ()
-			Setup() == is not yet specified;
+	protected testFeed: () ==> ()
+		testFeed() == (
+			facebook.clearInstance();
+			facebook.addUsers({u1,u2,u3,u4});
+			facebook.addFriendship(u1,u2);
+			facebook.addFriendship(u2,u3);
+			u1.makePublication("boas tudo bem", 20181221, <Public>);
+			u1.makePublication("not for you", 20181221, <Friends>);
+			u2.makePublication("boazz", 20181201, <Friends>);
 			
-	protected testAddFriendships: () ==> ()
-		testAddFriendships() == (
-		
-				face.getInstance().addUsers({user1, user2, user3, user4});
-				
-				face.getInstance().addFriendship(user1, user2);
-				face.getInstance().addFriendship(user1, user3);
-				face.getInstance().addFriendship(user1, user4);
-		
-				assertEqual(card user1.getFriends(), 3);			
-				assertEqual(card user2.getFriends(), 1);	
-				assertEqual(card user3.getFriends(), 1);	
-				assertEqual(card user4.getFriends(), 1);		
-		);
-		
-	protected testCommonFriends: () ==> ()
-		testCommonFriends() == (
-		
-				face.getInstance().addUsers({user1, user2, user3, user4});
-				
-				-- user1 has 3 friends: user2, user3, and user4
-				face.getInstance().addFriendship(user1, user2);
-				face.getInstance().addFriendship(user1, user3);
-				face.getInstance().addFriendship(user1, user4);
-				
-				-- user2 has 2 friends: user1, and user4
-				face.getInstance().addFriendship(user2, user4);
-				
-				assertEqual(face.getCommonFriends(user1, user2), {user4});
-				assertEqual(card face.getCommonFriends(user1, user2), 1);				
+			assertTrue(len facebook.getUserFeed(u1) = 1);
+			assertTrue(len facebook.getUserFeed(u2) = 2);
+			assertTrue(len facebook.getUserFeed(u3) = 1);
+			assertTrue(len facebook.getUserFeed(u4) = 0);
 		);
 			
 	public Run: () ==> ()
 			Run() == (
 				IO`println("\nRunning Facebook Tests\n");
 				
-				testAddFriendships();
-				face := Facebook`clearInstance();
-				
-				testCommonFriends();
-				face := Facebook`clearInstance();
+				testFeed();
 				
 				IO`println("\nFacebook Tests ran successfully\n");
 			);
