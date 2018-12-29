@@ -23,7 +23,5 @@ operations
   		getId() == return id
   		post RESULT = id;
 functions
--- TODO Define functiones here
 traces
--- TODO Define Combinatorial Test Traces here
 end ChatMessage

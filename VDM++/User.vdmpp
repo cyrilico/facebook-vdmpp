@@ -2,7 +2,6 @@ class User
 types
   public String = seq1 of char;
 values
--- TODO Define values here
 instance variables
   protected user: User; --Keep a self reference for invariant usage (self is not recognised in that scope)
   protected name: String;
@@ -187,7 +186,5 @@ operations
 			pre userBlocked in set blocked;
 	
 functions
--- TODO Define functiones here
 traces
--- TODO Define Combinatorial Test Traces here
 end User

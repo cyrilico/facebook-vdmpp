@@ -3,7 +3,6 @@ types
   public String = seq1 of char;
   public Date = Date`Date;
 values
--- TODO Define values here
 instance variables
   protected name: String;
   protected members: set of User;
@@ -71,7 +70,5 @@ operations
       				 ]    
 			)
 functions
--- TODO Define functiones here
 traces
--- TODO Define Combinatorial Test Traces here
 end GroupChat

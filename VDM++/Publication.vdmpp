@@ -7,7 +7,6 @@ types
   -- TransitiveConnection - Anyone with some eventual connection to the author (i.e. friends set transitive closure) can see
   public Permissions = <Public> | <Friends> | <FriendsOfFriends> | <TransitiveConnection>
 values
--- TODO Define values here
 instance variables
 	protected static idCounter: nat1 := 1;
 	protected id: nat1 := idCounter;
@@ -74,7 +73,5 @@ operations
  			pre user <> author
  			post RESULT >= 0;
 functions
--- TODO Define functiones here
 traces
--- TODO Define Combinatorial Test Traces here
 end Publication
