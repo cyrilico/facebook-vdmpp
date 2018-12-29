@@ -1,6 +1,7 @@
+-- Class representing a user publication to his timeline
 class Publication is subclass of Message
 types
-  -- Publication visibility permissions:
+  -- Publication visibility permissions (note that, in any case, author's blocked users do not have access):
   -- Public - Anyone can see
   -- Friends - Only author's friends can see
   -- FriendsOfFriends - Only author's friends and their friends can see
@@ -8,12 +9,15 @@ types
   public Permissions = <Public> | <Friends> | <FriendsOfFriends> | <TransitiveConnection>
 values
 instance variables
+	-- Unique ID to identify publication
 	protected static idCounter: nat1 := 1;
 	protected id: nat1 := idCounter;
+	-- Users that have liked publication
   protected likes: set of User;
   protected permissions: Permissions;
   
 operations
+	-- Constructor
   public Publication: User * String * Date * Permissions ==> Publication
       Publication(PublicationAuthor, PublicationContent, PublicationTimestamp, PublicationPermissions) == (
       	idCounter := idCounter + 1;
@@ -26,17 +30,23 @@ operations
       )
       pre PublicationContent <> ""
       post idCounter = idCounter~ + 1 and author = PublicationAuthor and content = PublicationContent and timestamp = PublicationTimestamp and likes = {} and permissions = PublicationPermissions;
-      
+  
+  -- ID getter
   pure public getId: () ==> nat1
   		getId() == return id
   		post RESULT = id;
-  		
+  
+  -- Update publication's access permitions
+  -- IN newPermissions - new publication permission settings
   public updatePermissions: Permissions ==> ()
   		updatePermissions(newPermissions) == (
   			permissions := newPermissions;
   		)
   		post permissions = newPermissions;
   
+  -- Checks if a user has access to this publication
+  -- IN user - user to be checked
+  -- OUT true if user has access to publication, false otherwise
   pure public userHasPermissions: User ==> bool
   		userHasPermissions(user) == (
   			cases permissions:
@@ -48,10 +58,13 @@ operations
   			end
   		);
   
+  -- Getter for users that liked publication
   pure public getLikes: () ==> set of User
   		getLikes() == return likes
   		post RESULT = likes;
-  		
+  
+  -- Register that a user (that has access to the publication - guaranteed by precondition) liked this publication
+  -- IN user - user that liked publication
   public like: User ==> ()
   		like(user) == (
   			likes := likes union {user}
@@ -59,6 +72,7 @@ operations
   		pre userHasPermissions(user)
   		post user in set likes and card likes = card likes~ + 1;
  	
+ 	-- Register that a user that previously liked this publication (guaranteed by precondition) no longer does so
  	public removeLike: User ==> ()
  			removeLike(user) == (
  				likes := likes \ {user}
@@ -66,8 +80,12 @@ operations
  			pre user in set likes
  			post user not in set likes and card likes = card likes~ - 1;
  	
+ 	-- Calculate a publication's score in regards to a user to assess its relevance for a main feed position
+ 	-- IN user - user to generate feed for
+ 	-- OUT publication score
  	public calculateScore: User ==> rat
  			calculateScore(user) == (
+ 				-- Criteria: Number of likes, boosted by number of likes from friends and possibly fact that author is a friend
  				return card likes * (1 + card (likes inter user.friends)) * (if user in set author.friends then 2 else 1); 
  			)
  			pre user <> author
