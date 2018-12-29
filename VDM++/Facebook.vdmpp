@@ -1,6 +1,7 @@
 class Facebook
 types
 	public String = seq1 of char;
+	-- Class private type to use in publication sorting for main feed generation
 	protected PublicationRank :: publication: Publication
 															 score: nat;
 	protected UserRank :: user: User
@@ -8,28 +9,36 @@ types
 values
 instance variables
   public users: set of User := {};
+  -- Singleton
   private static globalInstance: Facebook := new Facebook();
   
   -- User name uniqueness
   inv not exists user1, user2 in set users & user1 <> user2 and user1.getName() = user2.getName();
   
 operations
+	-- Constructor
   private Facebook: () ==> Facebook
     Facebook() == return self
     post users = {};
-   
+  
+  -- Singleton getter
   public pure static getInstance: () ==> Facebook
     getInstance() == return globalInstance;
   
+  -- Resets the singleton
   public static clearInstance: () ==> ()
   	clearInstance() == (
   		globalInstance := new Facebook();
   	);
   
+  -- Users getter
   public pure getUsers: () ==> set of User
   		getUsers() == return users
   		post RESULT = users;
-  		
+  
+  -- Retrieve a specific user by his (unique) name, if he exists
+  -- IN name - user name
+  -- OUT user object if there is a user with given name, nil otherwise
   public pure getUserByName: String ==> [User]
   		getUserByName(name) == (
   			dcl result: [User] := nil;
@@ -44,6 +53,8 @@ operations
   		)
   		post (exists user in set users & user.getName() = name) => RESULT <> nil;
   
+  -- Add a user to the platform
+  -- IN user - user to be added
   public addUser: User ==> ()
     addUser(user) == (
       users := users union {user}
@@ -51,6 +62,8 @@ operations
     pre user not in set users
     post users = users~ union {user};
   
+  -- Add a set of user to the platform simultaneously
+  -- IN users - set of users to be added
   public addUsers: set of User ==> ()
     addUsers(newUsers) == (
       users := users union newUsers
@@ -58,6 +71,7 @@ operations
     pre newUsers inter users = {}
     post users = users~ union newUsers;
   
+  -- Add a friendship between two users
   public addFriendship: User * User ==> ()
     addFriendship(user1, user2) == (
       dcl u1: User := user1;
@@ -70,6 +84,7 @@ operations
     pre user1 in set users and user2 in set users and user1 not in set user2.getBlockedUsers() and user2 not in set user1.getBlockedUsers()
     post user1 in set user2.friends and user2 in set user1.friends;
   
+  -- Remove a previously existing friendship between users
   public removeFriendship: User * User ==> ()
   	removeFriendship(user1, user2) == (
   		dcl u1: User := user1;
@@ -82,12 +97,19 @@ operations
   	pre user1 in set users and user2 in set users
   	post user1 not in set user2.friends and user2 not in set user1.friends;
   
+  -- Look up users whose name matches a search pattern
+  -- IN searchText - string to look up
+  -- OUT set of users whose name contains search text
   public searchUser: String ==> set of User
   		searchUser(searchText) == (
   			return {user | user in set users & user.nameContains(searchText)}
   		)
   		post forall user in set RESULT & exists i,j in set inds user.getName() & user.getName()(i,...,j) = searchText;
   
+  -- Look up publications that user has access to and whose content matches a search pattern
+  -- IN user - user that is searching
+  -- IN searchText - string to look up
+  -- OUT set of publications that user has access to and whose content contains search text
   public searchPublications: User * String ==> set of Publication
   		searchPublications(searcher, searchText) == (
   			return {publication | 
@@ -97,10 +119,20 @@ operations
   		pre searcher in set users
   		post forall publication in set RESULT & exists i,j in set inds publication.getContent() & publication.getContent()(i,...,j) = searchText;
 	
+	-- Get a user's timeline from another user's perspective
+	-- IN searcher - user that is looking up timeline
+	-- IN user - user whose timeline is being checked
+	-- OUT user timeline (i.e. all publications, sorted by timestamp, that searcher user has access to)
 	public getUserTimeline: User * User ==> seq of Publication
 			getUserTimeline(searcher, user) == return user.getPublications(searcher)
 			pre {user, searcher} subset users;
 	
+	-- Generated main feed for a user.
+	-- This involves retrieving all publications that are considered to be relevant for the user (and, of course, he has access to)
+	-- (i.e. publications from friends or that friends have liked)
+	-- Then the publications are sorted according to a score that privileges likes by friends and author friendship
+	-- IN user - user to generate feed for
+	-- OUT sequence of publications, sorted by score - the feed
 	public getUserFeed: User ==> seq of Publication
 			getUserFeed(user) == (
 				-- Retrieve all (visible) publications that either 1) are from a friend or 2) one or more friends have liked
@@ -119,7 +151,8 @@ operations
 			)
 			pre user in set users
 			post forall i in set inds RESULT & RESULT(i).userHasPermissions(user); -- User has access to all publications recommended
-			
+	
+	-- Retrieves common friends between two users
 	public getCommonFriends: User * User ==> set of User
 			getCommonFriends(user1, user2) == return user1.friends inter user2.friends
 			pre {user1, user2} subset users and user1 <> user2
@@ -138,6 +171,7 @@ operations
 			pre user in set users;
 			--post elems RESULT not in set user.friends and elems RESULT not in set user.getBlockedUsers();
 	
+	-- Sorts publications using bubble sort
 	protected sortPublications: seq of PublicationRank ==> seq of Publication
 			sortPublications(publications) == (
 				dcl sorted_list: seq of PublicationRank := publications;
