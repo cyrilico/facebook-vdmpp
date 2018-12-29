@@ -42,6 +42,10 @@ operations
   pure public getName: () ==> String
       getName() == return name
       post RESULT = name;
+      
+    pure public getNameLength: () ==> nat
+      getNameLength() == return len name
+      post RESULT = len name;
   
   pure public getChats: () ==> set of GroupChat
   		getChats() == return rng chats

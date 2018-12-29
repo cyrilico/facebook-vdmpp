@@ -3,6 +3,8 @@ types
 	public String = seq1 of char;
 	protected PublicationRank :: publication: Publication
 															 score: nat;
+	protected UserRank :: user: User
+															 score: nat;
 values
 instance variables
   public users: set of User := {};
@@ -122,7 +124,19 @@ operations
 			getCommonFriends(user1, user2) == return user1.friends inter user2.friends
 			pre {user1, user2} subset users and user1 <> user2
 			post RESULT subset user1.friends and RESULT subset user2.friends;
-	
+			
+	public getFriendSuggestions: User ==> seq of User
+			getFriendSuggestions(user) == (
+				dcl unsortedSuggestions : set of User := user.getFriendsOfFriends() \ user.friends;
+				
+				dcl scoredSuggestions : seq of UserRank := [];
+				for all suggestion in set unsortedSuggestions do
+					scoredSuggestions := scoredSuggestions ^ [mk_UserRank(suggestion, card getCommonFriends(user, suggestion))];
+				
+				return sortSuggestions(scoredSuggestions)
+			)
+			pre user in set users;
+			--post elems RESULT not in set user.friends and elems RESULT not in set user.getBlockedUsers();
 	
 	protected sortPublications: seq of PublicationRank ==> seq of Publication
 			sortPublications(publications) == (
@@ -138,6 +152,21 @@ operations
 							); 
 				return [sorted_list(i).publication | i in set inds sorted_list];
 				);  
+				
+		protected sortSuggestions: seq of UserRank ==> seq of User
+			sortSuggestions(suggestions) == (
+				dcl sorted_list: seq of UserRank := suggestions;
+				for i = len suggestions to 1 by -1 do 
+					for j = 1 to i-1 do 
+						if sorted_list(j).score < sorted_list(j+1).score 
+							 or sorted_list(j).score = sorted_list(j+1).score
+							 and sorted_list(j).user.getNameLength() > sorted_list(j+1).user.getNameLength() then 
+							(dcl temp: UserRank := sorted_list(j); 
+							sorted_list(j) := sorted_list(j+1); 
+							sorted_list(j+1) := temp
+							); 
+				return [sorted_list(i).user | i in set inds sorted_list];
+				); 
 functions
 traces
 end Facebook
