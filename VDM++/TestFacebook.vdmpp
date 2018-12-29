@@ -1,20 +1,19 @@
 class TestFacebook is subclass of Test
 
 instance variables
-	u1 : User := new User("user1");
-	u2 : User := new User("user2");
-	u3 : User := new User("user3");
-	u4 : User := new User("user4");
-	u5 : User := new User("user5");
-	u6 : User := new User("user6");
-	u7 : User := new User("user7");
-	u8 : User := new User("user8");
-	u9 : User := new User("user9");
-	userSeq : seq of User;
+	u1 : User;
+	u2 : User;
+	u3 : User;
+	u4 : User;
+	u5 : User;
+	u6 : User;
+	u7 : User;
+	u8 : User;
+	u9 : User;
 	
 operations
-		protected clearUsers: () ==> ()
-		clearUsers() == (
+		protected setupUsers: () ==> ()
+		setupUsers() == (
 			u1 := new User("user1");
 			u2 := new User("user2");
 			u3 := new User("user3");
@@ -26,30 +25,29 @@ operations
 			u9 := new User("user9");
 		);
 		
-	protected testFeed: () ==> ()
-		testFeed() == (
-			Facebook`clearInstance();
-			facebook := Facebook`getInstance();
-			
-			facebook.addUsers({u1,u2,u3,u4});
-			facebook.addFriendship(u1,u2);
-			facebook.addFriendship(u2,u3);
-			u1.makePublication("boas tudo bem", 20181221, <Public>);
-			u1.makePublication("not for you", 20181221, <Friends>);
-			u2.makePublication("boazz", 20181201, <Friends>);
-			
-			assertTrue(len facebook.getUserFeed(u1) = 1);
-			assertTrue(len facebook.getUserFeed(u2) = 2);
-			assertTrue(len facebook.getUserFeed(u3) = 1);
-			assertTrue(len facebook.getUserFeed(u4) = 0);
-		);
+		protected testFeed: () ==> ()
+			testFeed() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+				facebook.addUsers({u1,u2,u3,u4});
+				facebook.addFriendship(u1,u2);
+				facebook.addFriendship(u2,u3);
+				u1.makePublication("boas tudo bem", 20181221, <Public>);
+				u1.makePublication("not for you", 20181221, <Friends>);
+				u2.makePublication("boazz", 20181201, <Friends>);
+				
+				assertTrue(len facebook.getUserFeed(u1) = 1);
+				assertTrue(len facebook.getUserFeed(u2) = 2);
+				assertTrue(len facebook.getUserFeed(u3) = 1);
+				assertTrue(len facebook.getUserFeed(u4) = 0);
+			);
 		
 		protected testFriendSuggestions: () ==> ()
-		testFriendSuggestions() == (
-		
-				Facebook`clearInstance();
-				facebook := Facebook`getInstance();
-				clearUsers();
+			testFriendSuggestions() == (
+				dcl userSeq: seq of User;
+				facebook := Facebook`clearInstance();
+				setupUsers();
 				
 				facebook.addUsers({u1, u2, u3, u4, u5, u6, u7, u8, u9});
 				

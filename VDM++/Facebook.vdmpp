@@ -26,9 +26,10 @@ operations
     getInstance() == return globalInstance;
   
   -- Resets the singleton
-  public static clearInstance: () ==> ()
+  public static clearInstance: () ==> Facebook
   	clearInstance() == (
   		globalInstance := new Facebook();
+  		return getInstance();
   	);
   
   -- Users getter

@@ -2,10 +2,7 @@ class TestGroupChat is subclass of Test
 
 instance variables
 	
-operations
-	protected Setup: () ==> ()
-			Setup() == is not yet specified;
-			
+operations			
 	public Run: () ==> ()
 			Run() == (
 				IO`println("\nRunning GroupChat Tests\n");

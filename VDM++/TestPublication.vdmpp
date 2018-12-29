@@ -3,9 +3,6 @@ class TestPublication is subclass of Test
 instance variables
 	
 operations
-	protected Setup: () ==> ()
-			Setup() == is not yet specified;
-			
 	public Run: () ==> ()
 			Run() == (
 				IO`println("\nRunning Publication Tests\n");

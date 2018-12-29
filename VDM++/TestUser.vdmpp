@@ -3,9 +3,6 @@ class TestUser is subclass of Test
 instance variables
 	
 operations
-	protected Setup: () ==> ()
-			Setup() == is not yet specified;
-			
 	public Run: () ==> ()
 			Run() == (
 				IO`println("\nRunning User Tests\n");
