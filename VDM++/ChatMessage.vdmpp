@@ -1,13 +1,17 @@
+-- Class representing a message sent in a GroupChat
 class ChatMessage is subclass of Message
 types
 values
 	protected MAX_SIZE = 250; --Private conversation, so smaller messages
 instance variables
+	-- Unique ID to identify message
 	protected static idCounter: nat1 := 1;
 	protected id: nat1 := idCounter;
 	
+	-- Guarantee content is smaller than the maximum allowed size
 	inv len content <= MAX_SIZE;
 operations
+	-- Constructor
   public ChatMessage: User * String * Date ==> ChatMessage
       ChatMessage(MessageAuthor, MessageContent, MessageTimestamp) == (
       	idCounter := idCounter + 1;
@@ -18,12 +22,11 @@ operations
       )
       pre MessageContent <> ""
       post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp and idCounter = idCounter~ + 1;
-      
-      pure public getId: () ==> nat1
-  		getId() == return id
-  		post RESULT = id;
+  
+  -- ID getter    
+  pure public getId: () ==> nat1
+	getId() == return id
+	post RESULT = id;
 functions
--- TODO Define functiones here
 traces
--- TODO Define Combinatorial Test Traces here
 end ChatMessage

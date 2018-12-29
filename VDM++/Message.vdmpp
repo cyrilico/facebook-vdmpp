@@ -1,27 +1,34 @@
+--Base Message class. Chat messages and publications derive from it
 class Message
 types
+	-- String abstraction for the message's content
   public String = seq1 of char;
   public Date = Date`Date;
 values
--- TODO Define values here
 instance variables
   protected content: String;
   protected author: User;
   protected timestamp: Date;
  
 operations
+	-- Author getter
   pure public getAuthor: () ==> User
       getAuthor() == return author
       post RESULT = author;
   
+  -- Timestamp (date) getter
   pure public getTimestamp: () ==> Date
       getTimestamp() == return timestamp
       post RESULT = timestamp;
   
+  -- Content getter
   pure public getContent: () ==> String
   		getContent() == return content
   		post RESULT = content;
  	
+ 	-- Checks if the message's content contains a given string
+ 	-- IN string - string to search in content
+ 	-- OUT true if content contains string, false otherwise
 	pure public contentContains: String ==> bool
 		contentContains(string) == (
 			dcl msgContent: seq of char := content;
@@ -36,7 +43,5 @@ operations
 		)
       
 functions
--- TODO Define functiones here
 traces
--- TODO Define Combinatorial Test Traces here
 end Message
