@@ -6,10 +6,19 @@ instance variables
 	u3 : User := new User("user3");
 	u4 : User := new User("user4");
 	
+	u5 : User := new User("user5");
+	u6 : User := new User("user6");
+	u7 : User := new User("user7");
+	u8 : User := new User("user8");
+	
+	userSeq : seq of User;
+	
 operations
 	protected testFeed: () ==> ()
 		testFeed() == (
-			facebook.clearInstance();
+			Facebook`clearInstance();
+			facebook := Facebook`getInstance();
+			
 			facebook.addUsers({u1,u2,u3,u4});
 			facebook.addFriendship(u1,u2);
 			facebook.addFriendship(u2,u3);
@@ -22,12 +31,52 @@ operations
 			assertTrue(len facebook.getUserFeed(u3) = 1);
 			assertTrue(len facebook.getUserFeed(u4) = 0);
 		);
+		
+		protected testFriendSuggestions: () ==> ()
+		testFriendSuggestions() == (
+		
+				Facebook`clearInstance();
+				facebook := Facebook`getInstance();
+				
+				facebook.addUsers({u1, u2, u3, u4, u5, u6, u7, u8});
+				
+				-- u1 has 3 friends: u2, u3, and u4
+				facebook.addFriendship(u1, u2);
+				facebook.addFriendship(u1, u3);
+				facebook.addFriendship(u1, u4);
+				
+				-- u5 has 2 friends: u3, and u4
+				facebook.addFriendship(u5, u3);
+				facebook.addFriendship(u5, u4);
+				
+				facebook.addFriendship(u6, u3);
+				
+				facebook.addFriendship(u7, u2);
+				facebook.addFriendship(u7, u8);
+				
+				userSeq := facebook.getFriendSuggestions(u1);
+				assertEqual(len userSeq, 3);
+				
+				assertTrue(u5 in set elems userSeq);
+				assertTrue(u6 in set elems userSeq);
+				assertTrue(u7 in set elems userSeq);
+				
+				assertFalse(u1 in set elems userSeq);
+				assertFalse(u8 in set elems userSeq);
+				
+				assertEqual(hd userSeq, u5);
+				assertEqual([u5,u6,u7], userSeq);
+										
+		);
+		
 			
 	public Run: () ==> ()
 			Run() == (
 				IO`println("\nRunning Facebook Tests\n");
 				
 				testFeed();
+				
+				testFriendSuggestions();
 				
 				IO`println("\nFacebook Tests ran successfully\n");
 			);
