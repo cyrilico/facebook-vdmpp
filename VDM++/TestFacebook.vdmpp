@@ -5,15 +5,27 @@ instance variables
 	u2 : User := new User("user2");
 	u3 : User := new User("user3");
 	u4 : User := new User("user4");
-	
 	u5 : User := new User("user5");
 	u6 : User := new User("user6");
 	u7 : User := new User("user7");
 	u8 : User := new User("user8");
-	
+	u9 : User := new User("user9");
 	userSeq : seq of User;
 	
 operations
+		protected clearUsers: () ==> ()
+		clearUsers() == (
+			u1 := new User("user1");
+			u2 := new User("user2");
+			u3 := new User("user3");
+			u4 := new User("user4");
+			u5 := new User("user5");
+			u6 := new User("user6");
+			u7 := new User("user7");
+			u8 := new User("user8");
+			u9 := new User("user9");
+		);
+		
 	protected testFeed: () ==> ()
 		testFeed() == (
 			Facebook`clearInstance();
@@ -37,9 +49,11 @@ operations
 		
 				Facebook`clearInstance();
 				facebook := Facebook`getInstance();
+				clearUsers();
 				
-				facebook.addUsers({u1, u2, u3, u4, u5, u6, u7, u8});
+				facebook.addUsers({u1, u2, u3, u4, u5, u6, u7, u8, u9});
 				
+				-- Testing general case
 				-- u1 has 3 friends: u2, u3, and u4
 				facebook.addFriendship(u1, u2);
 				facebook.addFriendship(u1, u3);
@@ -50,22 +64,20 @@ operations
 				facebook.addFriendship(u5, u4);
 				
 				facebook.addFriendship(u6, u3);
-				
 				facebook.addFriendship(u7, u2);
 				facebook.addFriendship(u7, u8);
 				
 				userSeq := facebook.getFriendSuggestions(u1);
-				assertEqual(len userSeq, 3);
-				
-				assertTrue(u5 in set elems userSeq);
-				assertTrue(u6 in set elems userSeq);
-				assertTrue(u7 in set elems userSeq);
-				
-				assertFalse(u1 in set elems userSeq);
-				assertFalse(u8 in set elems userSeq);
-				
-				assertEqual(hd userSeq, u5);
+				assertEqual(3, len userSeq);
 				assertEqual([u5,u6,u7], userSeq);
+				
+				userSeq := facebook.getFriendSuggestions(u5);
+				assertEqual(2, len userSeq);
+				assertEqual([u1, u6], userSeq);
+				
+				-- Testing case where target user has no friends
+				userSeq := facebook.getFriendSuggestions(u9);
+				assertEqual(0, len userSeq);
 										
 		);
 		
