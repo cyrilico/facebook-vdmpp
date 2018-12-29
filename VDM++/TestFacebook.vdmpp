@@ -87,7 +87,6 @@ operations
 				IO`println("\nRunning Facebook Tests\n");
 				
 				testFeed();
-				
 				testFriendSuggestions();
 				
 				IO`println("\nFacebook Tests ran successfully\n");
