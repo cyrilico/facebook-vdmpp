@@ -111,6 +111,11 @@ operations
 			post RESULT subset user1.friends and RESULT subset user2.friends;
 			--TODO improve post condition
 			
+	public getFriendSuggestions: User ==> set of User
+			getFriendSuggestions(user) == return user.getFriendsOfFriends() \ user.friends
+			pre user in set users
+			post RESULT inter user.friends = {} and RESULT inter user.getBlockedUsers() = {};
+			
 functions
 -- TODO Define functiones here
 traces
