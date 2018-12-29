@@ -49,6 +49,10 @@ operations
   			end
   		);
   
+  pure public getLikes: () ==> set of User
+  		getLikes() == return likes
+  		post RESULT = likes;
+  		
   public like: User ==> ()
   		like(user) == (
   			likes := likes union {user}
