@@ -1,47 +1,59 @@
+-- Utility class to represent a date as an integer in the format YYYYMMDD
 class Date
-
-  types  
+  types
+  	-- Type definition
     public Date = nat
        inv d == isValidDate(d div 10000, (d div 100) mod 100, d mod 100);
 
   values
+  	-- Minimum date possible
 		public minimumDate = makeDate(1,1,1);
+		-- Maximum date possible
 		public maximumDate = makeDate(9999,12,31);
   functions
-      
+    
+    -- Checks if a date is valid
+    -- OUT true if date is valid, false otherwise
     public static isValidDate: nat * nat * nat -> bool
       isValidDate(year, month, day) ==
-        year >= 1 and month >= 1 and month <= 12 and day >= 1 and day <= DaysOfMonth(year, month);
+        year >= 1 and month >= 1 and month <= 12 and day >= 1 and day <= daysOfMonth(year, month);
     
-    public static IsLeapYear: nat -> bool
-      IsLeapYear(year) == 
+    -- Checks if a given year is a leap year. Used for verifying date correctness
+    -- OUT true if leap year, false otherwise
+    public static isLeapYear: nat -> bool
+      isLeapYear(year) == 
         year mod 4 = 0 and year mod 100 <> 0 or year mod 400 = 0;
-
-    public static DaysOfMonth: nat * nat -> nat
-      DaysOfMonth(year, month) == (
+		
+		-- Returns the number of days in a month for a given year
+		-- OUT number of days for pair month-year
+    public static daysOfMonth: nat * nat -> nat
+      daysOfMonth(year, month) == (
         cases month :
           1, 3, 5, 7, 8, 10, 12 -> 31,
           4, 6, 9, 11 -> 30,
-          2 -> if IsLeapYear(year) then 29 else 28
+          2 -> if isLeapYear(year) then 29 else 28
         end
        )
       pre month >= 1 and month <= 12;
-
+		
+		-- "Constructor"
     public static makeDate: nat * nat * nat -> Date
       makeDate(year, month, day) == 
         year * 10000 + month * 100 + day
       pre isValidDate(year, month, day);
- 
+ 	
+ 		-- Year getter
     public static getYear: Date -> nat
       getYear(d) == 
         d div 10000;
-      
+    
+    -- Month getter
     public static getMonth: Date -> nat
       getMonth(d) == 
         (d div 100) mod 100;
-      
+    
+    -- Day getter
     public static getDay: Date -> nat
       getDay(d) == 
-        d mod 100;          
-
+        d mod 100;
 end Date
