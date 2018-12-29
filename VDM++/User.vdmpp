@@ -1,5 +1,6 @@
 class User
 types
+	-- String type used for names
   public String = seq1 of char;
 values
 instance variables
@@ -8,7 +9,7 @@ instance variables
   public friends: set of User;
   protected blocked: set of User;
   protected posts: seq of Publication;
-  protected chats: inmap String to GroupChat;
+  protected chats: inmap String to GroupChat; -- chat_name |-> chat object
   
   -- No self friendship nor self blocking
   inv user not in set friends and user not in set blocked;
@@ -26,6 +27,7 @@ instance variables
   -- User is a member in all of the group chats he has stored
   inv forall chat in set rng chats & user in set chat.getMembers();
 operations
+	-- Constructor
   public User: String ==> User
       User(userName) == (
         name := userName;
@@ -39,30 +41,40 @@ operations
       pre userName <> ""
       post name = userName and friends = {} and posts = [];
   
+  -- Name getter
   pure public getName: () ==> String
       getName() == return name
       post RESULT = name;
   
+  -- Group chats getter
   pure public getChats: () ==> set of GroupChat
   		getChats() == return rng chats
   		post forall chat in set RESULT & chat.getName() in set dom chats;
   
+  -- Specific group chat getter
+  -- IN chat name
   pure public getChatByName: String ==> GroupChat
   		getChatByName(chatName) == return chats(chatName);
   
+  -- Publications getter from another user's perspective (i.e. retrieves publications that given user has access to)
+  -- IN searcher - user to assume perspective from
+  -- OUT publications visible to given user
   pure public getPublications: User ==> seq of Publication
   		getPublications(searcher) == (
   			return [posts(i) | i in set inds posts & posts(i).userHasPermissions(searcher)]
   		);
-  		
+ 	
+ 	-- Friends getter
   pure public getFriends: () ==> set of User
       getFriends() == return friends
       post RESULT = friends;
   
+  -- Blocked users getter
   pure public getBlockedUsers: () ==> set of User
   		getBlockedUsers() == return blocked
   		post RESULT = blocked;
   
+  -- Friends of friends getter (user's friends and all of their friends)
   pure public getFriendsOfFriends: () ==> set of User
   		getFriendsOfFriends() == (
   			-- Union of friends set with every other friends set from user's friends. Then, exclude itself
@@ -70,6 +82,7 @@ operations
   		)
   		post friends subset RESULT and card RESULT >= card friends;
   
+  -- Transitive connection (all people that user can reach through friend connections)
   pure public getFriendsTransitiveClosure: () ==> set of User
 			getFriendsTransitiveClosure() ==  (
 				dcl closure : set of User := friends;
@@ -82,7 +95,10 @@ operations
 				return closure \ {user}
 			)
 			post friends subset RESULT and card RESULT >= card friends;
-			
+	
+	-- Checks if user's name contains a search query text
+	-- IN string - search query
+	-- OUT true if name contains search text, false otherwise
 	public nameContains: String ==> bool
 			nameContains(string) == (
 				--seq of char instead of string because, if not found, can eventually become empty string
@@ -98,6 +114,10 @@ operations
 				return false
 			);
 	
+	-- Make a new publication to user's timeline
+	-- IN content - publication message
+	-- IN timestamp - publication timestamp
+	-- IN permissions - access permissions
 	public makePublication: Publication`String * Publication`Date * Publication`Permissions ==> ()
 			makePublication(content, timestamp, permissions) == (
 				posts := [new Publication(self, content, timestamp, permissions)] ^ posts
@@ -105,12 +125,17 @@ operations
 			pre len posts > 0 => timestamp >= posts(1).getTimestamp()
 			post len posts = len posts~ + 1;
 	
+	-- Update a publication's access permissions
+	-- IN publicationId - publication unique identifier (guaranteed valid by precondition)
+	-- IN newPermissions - new access permissions
 	public updatePublicationPermissions: nat1 * Publication`Permissions ==> ()
 			updatePublicationPermissions(publicationId, newPermissions) == (
 				let index = iota i in set inds posts & posts(i).getId() = publicationId in posts(index).updatePermissions(newPermissions)
 			)
 			pre exists1 index in set inds posts & posts(index).getId() = publicationId;
 	
+	-- Delete a publication
+	-- IN publicationID - publication unique identifier (guaranteed valid by precondition)
 	public deletePublication: nat1 ==> ()
 			deletePublication(publicationId) == (
 				posts := [posts(i) | i in set inds posts & posts(i).getId() <> publicationId]
@@ -118,7 +143,9 @@ operations
 			pre exists1 index in set inds posts & posts(index).getId() = publicationId
 			post not exists index in set inds posts & posts(index).getId() = publicationId;
 	
-	-- When user creates chat
+	-- Create a new group chat
+	-- IN chatName - new group chat's name
+	-- IN initialMembers - friends that user intends to have a conversation with
 	public createGroupChat: String * set of User ==> ()
 			createGroupChat(chatName, initialMembers) == (
 				--let expression so group chat reference is the same for all users
@@ -131,7 +158,18 @@ operations
 			pre chatName not in set dom chats and initialMembers subset friends
 			post chatName in set dom chats;
 	
-	-- When user is added to an existing chat
+	-- Add a friend to the chat
+	-- IN friend - friend to add
+	-- IN chatName - chat to add friend to
+	public addFriendToChat: User * String ==> ()
+			addFriendToChat(friend, chatName) == (
+				friend.addGroupChat(chats(chatName))
+			)
+			pre friend in set friends and chatName in set dom chats and not exists cName in set {chat.getName() | chat in set friend.getChats()} & cName = chatName
+			post exists1 cName in set {chat.getName() | chat in set friend.getChats()} & cName = chatName;
+	
+	-- When user is added to an existing chat (hence, protected) - used in two previous operations
+	-- IN chat - group chat he was added to
 	protected addGroupChat: GroupChat ==> ()
 			addGroupChat(chat) == (
 				chat.addMember(self);
@@ -140,13 +178,8 @@ operations
 			pre chat.getName() not in set dom chats
 			post chat.getName() in set dom chats;
 	
-	public addFriendToChat: User * String ==> ()
-			addFriendToChat(friend, chatName) == (
-				friend.addGroupChat(chats(chatName))
-			)
-			pre friend in set friends and chatName in set dom chats and not exists cName in set {chat.getName() | chat in set friend.getChats()} & cName = chatName
-			post exists1 cName in set {chat.getName() | chat in set friend.getChats()} & cName = chatName;
-	
+	-- Leave a group chat
+	-- IN chatName - group chat's name
 	public leaveGroupChat: String ==> ()
 			leaveGroupChat(chatName) == (
 				chats(chatName).removeMember(self);
@@ -155,30 +188,47 @@ operations
 			pre chatName in set dom chats
 			post chatName not in set dom chats;
 	
+	-- Send a message to a group chat
+	-- IN chatName - chat to send message to
+	-- IN content - message content
+	-- IN timestamp - message timestamp
 	public sendChatMessage: String * ChatMessage`String * ChatMessage`Date ==> ()
 			sendChatMessage(chatName, content, timestamp) == (
 				chats(chatName).sendMessage(new ChatMessage(user, content, timestamp));
 			)
 			pre chatName in set dom chats;
 	
+	-- Search for a message in a group chat
+	-- IN chatName - chat to search in
+	-- IN searchText - text pattern to search
+	-- OUT messages from chat that include search pattern
 	public searchTextInChat: String * String ==> seq of ChatMessage
 			searchTextInChat(chatName, searchText) == (
 				return chats(chatName).getMessagesWithText(searchText);
 			)
 			pre chatName in set dom chats;
 	
+	-- Filter messages in chat between a specific period
+	-- IN chatName - chat to filter
+	-- IN beginningDate - optional start of the period. Defaults to 1-1-1
+	-- IN endDate - optional end of the period. Defaults to 31-12-9999
+	-- OUT chat messages in the given period
 	public filterDateInChat: String * [Date] * [Date] ==> seq of ChatMessage
 			filterDateInChat(chatName, beginningDate, endDate) == (
 				return chats(chatName).getMessagesBetween(beginningDate, endDate);
 			)
 			pre chatName in set dom chats;
 	
+	-- Block a user (that cannot be a friend - guaranteed by invariant)
+	-- IN userBlocked - user to be blocked
 	public blockUser: User ==> ()
 			blockUser(userBlocked) == (
 				blocked := blocked union {userBlocked};
 			)
 			post card blocked = card blocked~ + 1;
 	
+	-- Unblock a previously blocked user (guaranteed by precondition)
+	-- IN userBlocked - user to be unblocked
 	public unblockUser: User ==> ()
 			unblockUser(userBlocked) == (
 				blocked := blocked \ {userBlocked};
