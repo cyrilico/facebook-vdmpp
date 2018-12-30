@@ -1,5 +1,8 @@
 package cli;
 
+import org.overture.codegen.runtime.VDMSet;
+import vdm.GroupChat;
+
 import java.util.ArrayList;
 
 class GroupChatMenu extends AbstractMenu {
@@ -60,11 +63,54 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private void seeAllMessages() {
+        GroupChat chat = selectChat();
+
     }
 
     private void searchMessagesByText() {
     }
 
     private void searchMessagesBetweenDates() {
+    }
+
+    private GroupChat selectChat() {
+        if(!listChats())
+            return null;
+
+        System.out.println("Which chat would you like to choose ?");
+
+        GroupChat chat;
+        int i = 3;
+        do {
+            System.out.print("Choose a chat: ");
+            String option = scanner.nextLine();
+
+            chat = mainMenu.user.getChatByName(option);
+
+            if (chat == null)
+                System.out.println("Chat not found");
+            i--;
+        } while (chat == null && i > 0);
+
+        return chat;
+    }
+
+    private boolean listChats() {
+        VDMSet chats = mainMenu.user.getChats();
+
+        if(chats.size() == 0) {
+            System.out.println("You don't have any open chats. Going back...");
+            return false;
+        }
+        else
+            System.out.println("You currently have " + chats.size() + " chats open:");
+
+        int i = 0;
+        for (Object obj : chats) {
+            GroupChat chat = (GroupChat) obj;
+            System.out.println("    " + i + " - " + chat.getName());
+        }
+
+        return true;
     }
 }
