@@ -4,7 +4,7 @@ instance variables
 	
 operations
 	-- Test scenario where publications are looked up by their content
-	-- Covers requirement R5
+	-- Covers requirement R6
 	protected testPublicationSearch: () ==> ()
 		testPublicationSearch() == (
 			facebook := Facebook`clearInstance();
@@ -12,11 +12,35 @@ operations
 		);
 
 	-- Test scenario where a user manages his timeline (make, update, delete publications)
-	-- Covers the respective scenario described in section 2.1 and requirement R6
+	-- Covers the respective scenario described in section 2.1 and requirement R5
 	protected testTimelineUpdate: () ==> ()
 		testTimelineUpdate() == (
 			facebook := Facebook`clearInstance();
 			setupUsers();
+			
+			facebook.addUser(u1);
+			-- make new publications
+			u1.makePublication("my first publication", Date`makeDate(2016,12,12), <Public>); --ID: 1
+			u1.makePublication("so, how is everybody doing", Date`makeDate(2017,01,01), <Public>); --ID: 2
+			u1.makePublication("hello, but only to my friends!", Date`makeDate(2017,02,14), <Friends>); --ID: 3
+			
+			assertEqual(u1.getPublicationById(1).getContent(), "my first publication");
+			assertEqual(len facebook.getUserTimeline(u1,u1), 3); --3 posts made 
+			assertEqual(u1.getPublicationById(3).getPermissions(), <Friends>);
+			
+			-- update existing publications' permissions
+			u1.updatePublicationPermissions(1, <FriendsOfFriends>);
+			u1.updatePublicationPermissions(3, <Public>);
+			
+			assertEqual(u1.getPublicationById(1).getPermissions(), <FriendsOfFriends>);
+			assertEqual(u1.getPublicationById(3).getPermissions(), <Public>);
+			assertEqual(len facebook.getUserTimeline(u1,u1), 3); -- no addition or deletion, just modification, so still 3 posts
+			
+			-- delete existing publications
+			u1.deletePublication(2);
+			assertEqual(u1.getPublicationById(1).getContent(), "my first publication"); -- ID 1 still exists
+			assertEqual(u1.getPublicationById(3).getContent(), "hello, but only to my friends!"); -- ID 3 still exists
+			assertEqual(len facebook.getUserTimeline(u1,u1), 2); -- Only 2 posts now (the previous ones)
 		);
 		
 	public Run: () ==> ()

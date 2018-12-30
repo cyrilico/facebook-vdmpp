@@ -35,7 +35,12 @@ operations
   pure public getId: () ==> nat1
   		getId() == return id
   		post RESULT = id;
-  
+
+  -- Permissions getter
+  pure public getPermissions: () ==> Permissions
+  		getPermissions() == return permissions
+  		post RESULT = permissions;
+  		
   -- Update publication's access permitions
   -- IN newPermissions - new publication permission settings
   public updatePermissions: Permissions ==> ()

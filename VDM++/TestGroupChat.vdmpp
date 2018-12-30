@@ -1,7 +1,6 @@
 class TestGroupChat is subclass of Test
 
 instance variables
-	
 operations			
 	-- Test scenario where users create chats with other users and communicate in it
 	-- Covers the respective scenario described in section 2.1 and requirement R7

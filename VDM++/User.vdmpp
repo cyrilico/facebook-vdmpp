@@ -138,6 +138,15 @@ operations
 				let index = iota i in set inds posts & posts(i).getId() = publicationId in posts(index).updatePermissions(newPermissions)
 			)
 			pre exists1 index in set inds posts & posts(index).getId() = publicationId;
+
+	-- Retrieve a publication through its unique ID
+	-- IN publicationId - publication unique identifier (guaranteed valid by precondition)
+	-- OUT publication
+	public getPublicationById: nat1 ==> Publication
+			getPublicationById(publicationId) == (
+				return iota publication in set elems posts & publication.getId() = publicationId;
+			)
+			pre exists1 index in set inds posts & posts(index).getId() = publicationId;
 	
 	-- Delete a publication
 	-- IN publicationID - publication unique identifier (guaranteed valid by precondition)
