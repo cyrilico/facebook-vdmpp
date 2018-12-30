@@ -197,8 +197,9 @@ operations
 	-- IN chatName - group chat's name
 	public leaveGroupChat: String ==> ()
 			leaveGroupChat(chatName) == (
-				chats(chatName).removeMember(self);
+				dcl g: GroupChat := chats(chatName);
 				chats := {chatName} <-: chats;
+				g.removeMember(self);
 			)
 			pre chatName in set dom chats
 			post chatName not in set dom chats;
