@@ -2,31 +2,27 @@ package cli;
 
 import java.util.ArrayList;
 
-class FriendsMenu extends AbstractMenu {
-
+class TimelineMenu extends AbstractMenu {
     private MainMenu mainMenu;
 
-    FriendsMenu(boolean hasParent, MainMenu mainMenu) {
+    TimelineMenu(boolean hasParent, MainMenu mainMenu) {
         super(hasParent);
         this.mainMenu = mainMenu;
     }
 
     @Override
     void getOptions() {
-        printDivision("Friends Menu");
+        printDivision("Timeline Menu");
 
         ArrayList<String> options = new ArrayList<>();
-        options.add("Search Users");
-        options.add("List Friends");
-        options.add("List Blocked Users");
+        options.add("See My Timeline");
+        options.add("See Timeline from other users");
 
         String input = printAndSelectOptions(options);
         switch (input) {
-            case "Search Users":
+            case "See My Timeline":
                 break;
-            case "List Friends":
-                break;
-            case "List Blocked Users":
+            case "See Timeline from other users":
                 break;
             case BACK_INPUT:
                 return;

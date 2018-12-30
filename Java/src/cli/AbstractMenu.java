@@ -8,8 +8,13 @@ abstract class AbstractMenu {
     static final String MENU_INPUT = "m";
 
     private Scanner scanner = new Scanner(System.in);
+    private boolean hasParent;
 
-    abstract void getOptions(boolean hasParent);
+    AbstractMenu(boolean hasParent) {
+        this.hasParent = hasParent;
+    }
+
+    abstract void getOptions();
 
     void printDivision(String menu) {
         System.out.println();
@@ -17,13 +22,13 @@ abstract class AbstractMenu {
 
     }
 
-    String printAndSelectOptions(ArrayList<String> options, boolean hasParent) {
-        printOptions(options, hasParent);
+    String printAndSelectOptions(ArrayList<String> options) {
+        printOptions(options);
 
-        return selectOptions(options, hasParent);
+        return selectOptions(options);
     }
 
-    private void printOptions(ArrayList<String> options, boolean hasParent) {
+    private void printOptions(ArrayList<String> options) {
         for (int i = 0; i < options.size(); i++) {
             System.out.println((i + 1) + "- " + options.get(i));
         }
@@ -35,13 +40,13 @@ abstract class AbstractMenu {
         System.out.print("Select one of the options: ");
     }
 
-    private String selectOptions(ArrayList<String> options, boolean hasParent) {
+    private String selectOptions(ArrayList<String> options) {
         boolean validInput = false;
         String input = "";
 
         while (!validInput) {
             input = scanner.nextLine();
-            validInput = isValidInput(options, hasParent, input);
+            validInput = isValidInput(options, input);
             if (!validInput) {
                 printInvalidInputMessage();
             }
@@ -54,7 +59,7 @@ abstract class AbstractMenu {
         }
     }
 
-    private boolean isValidInput(ArrayList<String> options, boolean hasParent, String input) {
+    private boolean isValidInput(ArrayList<String> options, String input) {
         if (hasParent) {
             if (input.equals(BACK_INPUT) || input.equals(MENU_INPUT)) {
                 return true;

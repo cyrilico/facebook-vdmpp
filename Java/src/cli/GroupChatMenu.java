@@ -2,31 +2,24 @@ package cli;
 
 import java.util.ArrayList;
 
-class FriendsMenu extends AbstractMenu {
-
+class GroupChatMenu extends AbstractMenu {
     private MainMenu mainMenu;
 
-    FriendsMenu(boolean hasParent, MainMenu mainMenu) {
+    GroupChatMenu(boolean hasParent, MainMenu mainMenu) {
         super(hasParent);
         this.mainMenu = mainMenu;
     }
 
     @Override
     void getOptions() {
-        printDivision("Friends Menu");
+        printDivision("Group Chat Menu");
 
         ArrayList<String> options = new ArrayList<>();
-        options.add("Search Users");
-        options.add("List Friends");
-        options.add("List Blocked Users");
+        options.add("");
 
         String input = printAndSelectOptions(options);
         switch (input) {
-            case "Search Users":
-                break;
-            case "List Friends":
-                break;
-            case "List Blocked Users":
+            case "":
                 break;
             case BACK_INPUT:
                 return;
