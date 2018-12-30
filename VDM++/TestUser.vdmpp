@@ -3,12 +3,89 @@ class TestUser is subclass of Test
 instance variables
 	
 operations
+		-- Test scenario where users add each other to their friends list
+		-- Covers the respective scenario described in section 2.1 and requirement R3
+		protected testFriendship: () ==> ()
+			testFriendship() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+				facebook.addUsers({u1,u2,u3,u4,u5,u6,u7,u8});
+				
+				-- setup friendships
+				facebook.addFriendship(u1,u2);
+				facebook.addFriendship(u1,u3);
+				facebook.addFriendship(u1,u4);
+				facebook.addFriendship(u2,u5);
+				facebook.addFriendship(u3,u6);
+				facebook.addFriendship(u3,u4);
+				facebook.addFriendship(u4,u7);
+				facebook.addFriendship(u7,u8);
+				
+				assertEqual(u1.getFriends(), {u2,u3,u4});
+				assertEqual(u2.getFriends(), {u1,u5});
+				assertEqual(u5.getFriends(), {u2}); --test friendship biconnection property
+				assertEqual(u1.getFriendsOfFriends(), {u2,u3,u4,u5,u6,u7});
+				assertEqual(u1.getFriendsTransitiveClosure(), {u2,u3,u4,u5,u6,u7,u8});
+			
+				-- remove some friendships
+				facebook.removeFriendship(u1,u2);
+				facebook.removeFriendship(u1,u4);
+				
+				assertEqual(u1.getFriends(), {u3});
+				assertTrue(u1 not in set u2.getFriends());
+				assertEqual(u2.getFriends(), {u5});
+				assertEqual(u1.getFriendsOfFriends(), {u3,u4,u6});
+				assertEqual(u1.getFriendsTransitiveClosure(), {u3,u4,u6,u7,u8});
+			);
+
+		-- Test scenario where users add other users to their blocked users list
+		-- Covers the respective scenario described in section 2.1 and requirement R4
+		protected testBlocking: () ==> ()
+			testBlocking() == (				
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+				facebook.addUsers({u1,u2,u3,u4,u5,u6,u7,u8});
+				
+				-- setup friendships
+				u1.blockUser(u2);
+				u1.blockUser(u3);
+				u1.blockUser(u4);
+				u2.blockUser(u5);
+				u3.blockUser(u6);
+				u3.blockUser(u4);
+				
+				assertEqual(u1.getBlockedUsers(), {u2,u3,u4});
+				assertEqual(u2.getBlockedUsers(), {u5});
+				assertEqual(u5.getBlockedUsers(), {}); --blocking is not necessarily bidirectional, unlike friendship
+				assertEqual(card u3.getBlockedUsers(), 2);
+			
+				-- remove some friendships
+				u1.unblockUser(u2);
+				u1.unblockUser(u4);
+				u3.unblockUser(u4);
+				
+				assertEqual(card u1.getBlockedUsers(), 1);
+				assertTrue(u2 not in set u1.getBlockedUsers());
+				assertTrue(u4 not in set u1.getBlockedUsers());
+			);
+			
+		-- Test scenario where a user checks other users' timeline
+		-- Covers requirement R10
+		protected testTimeline: () ==> ()
+			testTimeline() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+			);
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning User Tests\n");
-								
-					
-				IO`println("\nUser Tests ran successfully\n");
+				IO`println("Running User Tests\n");
+				testFriendship();
+				testBlocking();
+				testTimeline();
+				IO`println("User Tests ran successfully\n");
 			);
 
 end TestUser

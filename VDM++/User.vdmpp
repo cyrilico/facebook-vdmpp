@@ -58,7 +58,8 @@ operations
   -- Specific group chat getter
   -- IN chat name
   pure public getChatByName: String ==> GroupChat
-  		getChatByName(chatName) == return chats(chatName);
+  		getChatByName(chatName) == return chats(chatName)
+  		pre chatName in set dom chats;
   
   -- Publications getter from another user's perspective (i.e. retrieves publications that given user has access to)
   -- IN searcher - user to assume perspective from
@@ -82,7 +83,7 @@ operations
   pure public getFriendsOfFriends: () ==> set of User
   		getFriendsOfFriends() == (
   			-- Union of friends set with every other friends set from user's friends. Then, exclude itself
-  			return {people | people in set friends union dunion {friend.friends | friend in set friends} \ {user} } 
+  			return {people | people in set (friends union dunion {friend.friends | friend in set friends} \ {user}) } 
   		)
   		post friends subset RESULT and card RESULT >= card friends;
   
@@ -135,6 +136,15 @@ operations
 	public updatePublicationPermissions: nat1 * Publication`Permissions ==> ()
 			updatePublicationPermissions(publicationId, newPermissions) == (
 				let index = iota i in set inds posts & posts(i).getId() = publicationId in posts(index).updatePermissions(newPermissions)
+			)
+			pre exists1 index in set inds posts & posts(index).getId() = publicationId;
+
+	-- Retrieve a publication through its unique ID
+	-- IN publicationId - publication unique identifier (guaranteed valid by precondition)
+	-- OUT publication
+	public getPublicationById: nat1 ==> Publication
+			getPublicationById(publicationId) == (
+				return iota publication in set elems posts & publication.getId() = publicationId;
 			)
 			pre exists1 index in set inds posts & posts(index).getId() = publicationId;
 	
