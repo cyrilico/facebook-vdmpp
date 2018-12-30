@@ -8,6 +8,20 @@ operations
 			testRegistration() == (
 				facebook := Facebook`clearInstance();
 				setupUsers();
+				
+				-- add 1 user
+				facebook.addUser(u1);
+				assertTrue(card facebook.getUsers() = 1);
+				
+				-- add multiple users
+				facebook.addUsers({u2,u3,u4,u5});
+				assertTrue(card facebook.getUsers() = 5);
+				
+				assertTrue({u1,u2,u3,u4,u5} = facebook.getUsers());
+				
+				-- check existing and non existing users
+				assertTrue(facebook.getUserByName("user1") = u1);
+				assertTrue(facebook.getUserByName("user6") = nil);
 			);
 		
 		-- Test scenario where users are looked up by their names
