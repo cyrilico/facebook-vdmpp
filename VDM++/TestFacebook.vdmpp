@@ -11,25 +11,44 @@ operations
 				
 				-- add 1 user
 				facebook.addUser(u1);
-				assertTrue(card facebook.getUsers() = 1);
+				facebook.addUser(u2);
+				assertTrue(card facebook.getUsers() = 2);
 				
 				-- add multiple users
-				facebook.addUsers({u2,u3,u4,u5});
+				facebook.addUsers({u3,u4,u5});
 				assertTrue(card facebook.getUsers() = 5);
 				
 				assertTrue({u1,u2,u3,u4,u5} = facebook.getUsers());
 				
 				-- check existing and non existing users
-				assertTrue(facebook.getUserByName("user1") = u1);
-				assertTrue(facebook.getUserByName("user6") = nil);
+				assertEqual(facebook.getUserByName("user1"), u1);
+				assertEqual(facebook.getUserByName("user6"), nil);
 			);
 		
 		-- Test scenario where users are looked up by their names
 		-- Covers requirement R2
 		protected testUserSearch: () ==> ()
 			testUserSearch() == (
+				-- create some users with more sophisticated names
+				dcl ua: User := new User("joseph");
+				dcl ub: User := new User("john");
+				dcl uc: User := new User("amanda");
+				dcl ud: User := new User("anna");
+				dcl ue: User := new User("username6");
 				facebook := Facebook`clearInstance();
 				setupUsers();
+				
+				-- add some users to the platform
+				facebook.addUsers({u1,u2,u3,ua,ub,uc,ud,ue});
+				
+				assertTrue(card facebook.searchUser("user") = 4);
+				assertEqual(facebook.searchUser("user"), {u1,u2,u3,ue});
+				
+				assertTrue(card facebook.searchUser("jo") = 2);
+				assertEqual(facebook.searchUser("jo"), {ua,ub});
+				
+				assertTrue(ud in set facebook.searchUser("ann"));
+				assertTrue(uc not in set facebook.searchUser("ann"));
 			);
 		
 		-- Test scenario where a user checks his main feed to assess the most relevant content for him
