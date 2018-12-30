@@ -52,7 +52,7 @@ operations
 			);
 		
 		-- Test scenario where a user checks his main feed to assess the most relevant content for him
-		-- Covers the respective scenario described in section 2.1 and requirement R11
+		-- Covers the respective scenario described in section 2.1 and requirement R12
 		protected testFeed: () ==> ()
 			testFeed() == (
 				facebook := Facebook`clearInstance();
@@ -72,7 +72,7 @@ operations
 			);
 		
 		-- Test scenario where users receive potential friend suggestions
-		-- Covers requirement R9
+		-- Covers requirement R10
 		protected testFriendSuggestions: () ==> ()
 			testFriendSuggestions() == (
 				dcl userSeq: seq of User;

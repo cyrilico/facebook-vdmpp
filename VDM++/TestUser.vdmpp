@@ -72,7 +72,7 @@ operations
 			);
 			
 		-- Test scenario where a user checks other users' timeline
-		-- Covers requirement R10
+		-- Covers requirement R11
 		protected testTimeline: () ==> ()
 			testTimeline() == (
 				facebook := Facebook`clearInstance();

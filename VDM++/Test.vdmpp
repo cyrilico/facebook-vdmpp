@@ -30,11 +30,6 @@ operations
 		assertTrue(arg) == 
 			return 
 		pre arg;
-		
-		protected assertFalse: bool ==> ()
-		assertFalse(arg) == 
-			return 
-		pre not arg;
 	  
 		protected assertEqual: ? * ? ==> ()
 		assertEqual(expected, actual) == 

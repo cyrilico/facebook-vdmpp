@@ -197,8 +197,9 @@ operations
 	-- IN chatName - group chat's name
 	public leaveGroupChat: String ==> ()
 			leaveGroupChat(chatName) == (
-				chats(chatName).removeMember(self);
+				dcl g: GroupChat := chats(chatName);
 				chats := {chatName} <-: chats;
+				g.removeMember(self);
 			)
 			pre chatName in set dom chats
 			post chatName not in set dom chats;
@@ -220,17 +221,6 @@ operations
 	public searchTextInChat: String * String ==> seq of ChatMessage
 			searchTextInChat(chatName, searchText) == (
 				return chats(chatName).getMessagesWithText(searchText);
-			)
-			pre chatName in set dom chats;
-	
-	-- Filter messages in chat between a specific period
-	-- IN chatName - chat to filter
-	-- IN beginningDate - optional start of the period. Defaults to 1-1-1
-	-- IN endDate - optional end of the period. Defaults to 31-12-9999
-	-- OUT chat messages in the given period
-	public filterDateInChat: String * [Date] * [Date] ==> seq of ChatMessage
-			filterDateInChat(chatName, beginningDate, endDate) == (
-				return chats(chatName).getMessagesBetween(beginningDate, endDate);
 			)
 			pre chatName in set dom chats;
 	

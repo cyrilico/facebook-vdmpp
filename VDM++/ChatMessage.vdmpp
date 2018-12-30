@@ -23,10 +23,16 @@ operations
       pre MessageContent <> ""
       post author = MessageAuthor and content = MessageContent and timestamp = MessageTimestamp and idCounter = idCounter~ + 1;
   
+  -- Unique ID reset
+  public static resetIDCounter: () ==> ()
+  		resetIDCounter() == (
+  			idCounter := 1;
+  		);
+  		
   -- ID getter    
   pure public getId: () ==> nat1
-	getId() == return id
-	post RESULT = id;
+			getId() == return id
+			post RESULT = id;
 functions
 traces
 end ChatMessage
