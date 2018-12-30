@@ -42,8 +42,8 @@ class AuthMenu extends AbstractMenu {
         if (user != null) {
             this.mainMenu = new MainMenu(true, facebook, user);
             this.mainMenu.getOptions();
-        } else {
-            getOptions();
         }
+
+        getOptions();
     }
 }
