@@ -25,6 +25,11 @@ public class ChatMessage extends Message {
     cg_init_ChatMessage_1(MessageAuthor, MessageContent, MessageTimestamp);
   }
 
+  public static void resetIDCounter() {
+
+    idCounter = 1L;
+  }
+
   public Number getId() {
 
     return id;

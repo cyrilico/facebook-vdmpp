@@ -51,9 +51,9 @@ public class User {
   public VDMSeq getPublications(final User searcher) {
 
     VDMSeq seqCompResult_5 = SeqUtil.seq();
-    VDMSet set_21 = SeqUtil.inds(posts);
-    for (Iterator iterator_23 = set_21.iterator(); iterator_23.hasNext(); ) {
-      Number i = ((Number) iterator_23.next());
+    VDMSet set_31 = SeqUtil.inds(posts);
+    for (Iterator iterator_33 = set_31.iterator(); iterator_33.hasNext(); ) {
+      Number i = ((Number) iterator_33.next());
       if (((Publication) Utils.get(posts, i)).userHasPermissions(searcher)) {
         seqCompResult_5.add(((Publication) Utils.get(posts, i)));
       }
@@ -73,22 +73,22 @@ public class User {
 
   public VDMSet getFriendsOfFriends() {
 
-    VDMSet setCompResult_6 = SetUtil.set();
     VDMSet setCompResult_7 = SetUtil.set();
-    VDMSet set_23 = Utils.copy(friends);
-    for (Iterator iterator_25 = set_23.iterator(); iterator_25.hasNext(); ) {
-      User friend = ((User) iterator_25.next());
-      setCompResult_7.add(friend.friends);
+    VDMSet setCompResult_8 = SetUtil.set();
+    VDMSet set_33 = Utils.copy(friends);
+    for (Iterator iterator_35 = set_33.iterator(); iterator_35.hasNext(); ) {
+      User friend = ((User) iterator_35.next());
+      setCompResult_8.add(friend.friends);
     }
-    VDMSet set_22 =
+    VDMSet set_32 =
         SetUtil.diff(
-            SetUtil.union(Utils.copy(friends), SetUtil.dunion(Utils.copy(setCompResult_7))),
+            SetUtil.union(Utils.copy(friends), SetUtil.dunion(Utils.copy(setCompResult_8))),
             SetUtil.set(user));
-    for (Iterator iterator_24 = set_22.iterator(); iterator_24.hasNext(); ) {
-      User people = ((User) iterator_24.next());
-      setCompResult_6.add(people);
+    for (Iterator iterator_34 = set_32.iterator(); iterator_34.hasNext(); ) {
+      User people = ((User) iterator_34.next());
+      setCompResult_7.add(people);
     }
-    return Utils.copy(setCompResult_6);
+    return Utils.copy(setCompResult_7);
   }
 
   public VDMSet getFriendsTransitiveClosure() {
@@ -159,59 +159,59 @@ public class User {
   public void updatePublicationPermissions(
       final Number publicationId, final Object newPermissions) {
 
-    Number iotaExp_2 = null;
-    Long iotaCounter_2 = 0L;
-    VDMSet set_25 = SeqUtil.inds(posts);
-    for (Iterator iterator_27 = set_25.iterator(); iterator_27.hasNext(); ) {
-      Number i = ((Number) iterator_27.next());
+    Number iotaExp_4 = null;
+    Long iotaCounter_4 = 0L;
+    VDMSet set_35 = SeqUtil.inds(posts);
+    for (Iterator iterator_37 = set_35.iterator(); iterator_37.hasNext(); ) {
+      Number i = ((Number) iterator_37.next());
       if (Utils.equals(((Publication) Utils.get(posts, i)).getId(), publicationId)) {
-        iotaCounter_2++;
-        if (iotaCounter_2.longValue() > 1L) {
+        iotaCounter_4++;
+        if (iotaCounter_4.longValue() > 1L) {
           throw new RuntimeException("Iota selects more than one result");
         } else {
-          iotaExp_2 = i;
+          iotaExp_4 = i;
         }
       }
     }
-    if (Utils.equals(iotaCounter_2, 0L)) {
+    if (Utils.equals(iotaCounter_4, 0L)) {
       throw new RuntimeException("Iota selects more than one result");
     }
 
     {
-      final Number index = iotaExp_2;
+      final Number index = iotaExp_4;
       ((Publication) Utils.get(posts, index)).updatePermissions(newPermissions);
     }
   }
 
   public Publication getPublicationById(final Number publicationId) {
 
-    Publication iotaExp_3 = null;
-    Long iotaCounter_3 = 0L;
-    VDMSet set_27 = SeqUtil.elems(Utils.copy(posts));
-    for (Iterator iterator_29 = set_27.iterator(); iterator_29.hasNext(); ) {
-      Publication publication = ((Publication) iterator_29.next());
+    Publication iotaExp_5 = null;
+    Long iotaCounter_5 = 0L;
+    VDMSet set_37 = SeqUtil.elems(Utils.copy(posts));
+    for (Iterator iterator_39 = set_37.iterator(); iterator_39.hasNext(); ) {
+      Publication publication = ((Publication) iterator_39.next());
       if (Utils.equals(publication.getId(), publicationId)) {
-        iotaCounter_3++;
-        if (iotaCounter_3.longValue() > 1L) {
+        iotaCounter_5++;
+        if (iotaCounter_5.longValue() > 1L) {
           throw new RuntimeException("Iota selects more than one result");
         } else {
-          iotaExp_3 = publication;
+          iotaExp_5 = publication;
         }
       }
     }
-    if (Utils.equals(iotaCounter_3, 0L)) {
+    if (Utils.equals(iotaCounter_5, 0L)) {
       throw new RuntimeException("Iota selects more than one result");
     }
 
-    return iotaExp_3;
+    return iotaExp_5;
   }
 
   public void deletePublication(final Number publicationId) {
 
     VDMSeq seqCompResult_6 = SeqUtil.seq();
-    VDMSet set_30 = SeqUtil.inds(posts);
-    for (Iterator iterator_32 = set_30.iterator(); iterator_32.hasNext(); ) {
-      Number i = ((Number) iterator_32.next());
+    VDMSet set_40 = SeqUtil.inds(posts);
+    for (Iterator iterator_42 = set_40.iterator(); iterator_42.hasNext(); ) {
+      Number i = ((Number) iterator_42.next());
       if (!(Utils.equals(((Publication) Utils.get(posts, i)).getId(), publicationId))) {
         seqCompResult_6.add(((Publication) Utils.get(posts, i)));
       }
@@ -226,8 +226,8 @@ public class User {
           new GroupChat(chatName, SetUtil.union(Utils.copy(initialMembers), SetUtil.set(this)));
       {
         chats = MapUtil.munion(Utils.copy(chats), MapUtil.map(new Maplet(chatName, newChat)));
-        for (Iterator iterator_40 = initialMembers.iterator(); iterator_40.hasNext(); ) {
-          User member = (User) iterator_40.next();
+        for (Iterator iterator_50 = initialMembers.iterator(); iterator_50.hasNext(); ) {
+          User member = (User) iterator_50.next();
           member.addGroupChat(newChat);
         }
       }
@@ -250,8 +250,9 @@ public class User {
 
   public void leaveGroupChat(final String chatName) {
 
-    ((GroupChat) Utils.get(chats, chatName)).removeMember(this);
+    GroupChat g = ((GroupChat) Utils.get(chats, chatName));
     chats = MapUtil.domResBy(SetUtil.set(chatName), Utils.copy(chats));
+    g.removeMember(this);
   }
 
   public void sendChatMessage(final String chatName, final String content, final Number timestamp) {
@@ -262,12 +263,6 @@ public class User {
   public VDMSeq searchTextInChat(final String chatName, final String searchText) {
 
     return ((GroupChat) Utils.get(chats, chatName)).getMessagesWithText(searchText);
-  }
-
-  public VDMSeq filterDateInChat(
-          final String chatName, final Number beginningDate, final Number endDate) {
-
-    return ((GroupChat) Utils.get(chats, chatName)).getMessagesBetween(beginningDate, endDate);
   }
 
   public void blockUser(final User userBlocked) {

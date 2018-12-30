@@ -51,10 +51,10 @@ public class GroupChat {
   public VDMSeq getMessagesBetween(final Number startDate, final Number endDate) {
 
     VDMSeq seqCompResult_3 = SeqUtil.seq();
-    VDMSet set_16 = SeqUtil.inds(messages);
-    for (Iterator iterator_18 = set_16.iterator(); iterator_18.hasNext(); ) {
-      Number i = ((Number) iterator_18.next());
-      Boolean andResult_25 = false;
+    VDMSet set_21 = SeqUtil.inds(messages);
+    for (Iterator iterator_23 = set_21.iterator(); iterator_23.hasNext(); ) {
+      Number i = ((Number) iterator_23.next());
+      Boolean andResult_29 = false;
 
       Object ternaryIfExp_2 = null;
 
@@ -76,11 +76,11 @@ public class GroupChat {
 
         if (((ChatMessage) Utils.get(messages, i)).getTimestamp().longValue()
             <= ((Number) (ternaryIfExp_3)).doubleValue()) {
-          andResult_25 = true;
+          andResult_29 = true;
         }
       }
 
-      if (andResult_25) {
+      if (andResult_29) {
         seqCompResult_3.add(((ChatMessage) Utils.get(messages, i)));
       }
     }
@@ -90,9 +90,9 @@ public class GroupChat {
   public VDMSeq getMessagesWithText(final String searchText) {
 
     VDMSeq seqCompResult_4 = SeqUtil.seq();
-    VDMSet set_17 = SeqUtil.inds(messages);
-    for (Iterator iterator_19 = set_17.iterator(); iterator_19.hasNext(); ) {
-      Number i = ((Number) iterator_19.next());
+    VDMSet set_22 = SeqUtil.inds(messages);
+    for (Iterator iterator_24 = set_22.iterator(); iterator_24.hasNext(); ) {
+      Number i = ((Number) iterator_24.next());
       if (((ChatMessage) Utils.get(messages, i)).contentContains(searchText)) {
         seqCompResult_4.add(((ChatMessage) Utils.get(messages, i)));
       }
@@ -102,25 +102,25 @@ public class GroupChat {
 
   public ChatMessage getMessageById(final Number messageId) {
 
-    ChatMessage iotaExp_1 = null;
-    Long iotaCounter_1 = 0L;
-    VDMSet set_19 = SeqUtil.elems(Utils.copy(messages));
-    for (Iterator iterator_21 = set_19.iterator(); iterator_21.hasNext(); ) {
-      ChatMessage message = ((ChatMessage) iterator_21.next());
+    ChatMessage iotaExp_3 = null;
+    Long iotaCounter_3 = 0L;
+    VDMSet set_24 = SeqUtil.elems(Utils.copy(messages));
+    for (Iterator iterator_26 = set_24.iterator(); iterator_26.hasNext(); ) {
+      ChatMessage message = ((ChatMessage) iterator_26.next());
       if (Utils.equals(message.getId(), messageId)) {
-        iotaCounter_1++;
-        if (iotaCounter_1.longValue() > 1L) {
+        iotaCounter_3++;
+        if (iotaCounter_3.longValue() > 1L) {
           throw new RuntimeException("Iota selects more than one result");
         } else {
-          iotaExp_1 = message;
+          iotaExp_3 = message;
         }
       }
     }
-    if (Utils.equals(iotaCounter_1, 0L)) {
+    if (Utils.equals(iotaCounter_3, 0L)) {
       throw new RuntimeException("Iota selects more than one result");
     }
 
-    return iotaExp_1;
+    return iotaExp_3;
   }
 
   public GroupChat() {}

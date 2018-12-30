@@ -183,21 +183,6 @@ public class Date {
     return year.longValue() * 10000L + month.longValue() * 100L + day.longValue();
   }
 
-  public static Number getYear(final Number d) {
-
-    return Utils.div(d.longValue(), 10000L);
-  }
-
-  public static Number getMonth(final Number d) {
-
-    return Utils.mod(Utils.div(d.longValue(), 100L), 100L);
-  }
-
-  public static Number getDay(final Number d) {
-
-    return Utils.mod(d.longValue(), 100L);
-  }
-
   public String toString() {
 
     return "Date{"

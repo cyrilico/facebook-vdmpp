@@ -28,6 +28,7 @@ public class Facebook {
 
     globalInstance = new Facebook();
     Publication.resetIDCounter();
+    ChatMessage.resetIDCounter();
     return getInstance();
   }
 
@@ -39,8 +40,8 @@ public class Facebook {
   public User getUserByName(final String name) {
 
     User result = null;
-    for (Iterator iterator_37 = users.iterator(); iterator_37.hasNext(); ) {
-      User user = (User) iterator_37.next();
+    for (Iterator iterator_47 = users.iterator(); iterator_47.hasNext(); ) {
+      User user = (User) iterator_47.next();
       if (Utils.equals(user.getName(), name)) {
         result = user;
       } else {
@@ -86,38 +87,101 @@ public class Facebook {
     } /* End of atomic statement */
   }
 
-  public VDMSet searchUser(final String searchText) {
+  protected VDMSet getAllPublications(final User searcher) {
 
     VDMSet setCompResult_1 = SetUtil.set();
-    VDMSet set_6 = Utils.copy(users);
-    for (Iterator iterator_7 = set_6.iterator(); iterator_7.hasNext(); ) {
-      User user = ((User) iterator_7.next());
-      if (user.nameContains(searchText)) {
-        setCompResult_1.add(user);
+    VDMSet set_4 = Utils.copy(users);
+    for (Iterator iterator_4 = set_4.iterator(); iterator_4.hasNext(); ) {
+      User member = ((User) iterator_4.next());
+      setCompResult_1.add(SeqUtil.elems(getUserTimeline(searcher, member)));
+    }
+    return SetUtil.dunion(Utils.copy(setCompResult_1));
+  }
+
+  public void likePublication(final User user, final Number publicationId) {
+
+    Publication iotaExp_1 = null;
+    Long iotaCounter_1 = 0L;
+    VDMSet set_6 = getAllPublications(user);
+    for (Iterator iterator_6 = set_6.iterator(); iterator_6.hasNext(); ) {
+      Publication publication = ((Publication) iterator_6.next());
+      if (Utils.equals(publication.getId(), publicationId)) {
+        iotaCounter_1++;
+        if (iotaCounter_1.longValue() > 1L) {
+          throw new RuntimeException("Iota selects more than one result");
+        } else {
+          iotaExp_1 = publication;
+        }
       }
     }
-    return Utils.copy(setCompResult_1);
+    if (Utils.equals(iotaCounter_1, 0L)) {
+      throw new RuntimeException("Iota selects more than one result");
+    }
+
+    {
+      final Publication publication = iotaExp_1;
+      publication.like(user);
+    }
+  }
+
+  public void unlikePublication(final User user, final Number publicationId) {
+
+    Publication iotaExp_2 = null;
+    Long iotaCounter_2 = 0L;
+    VDMSet set_8 = getAllPublications(user);
+    for (Iterator iterator_8 = set_8.iterator(); iterator_8.hasNext(); ) {
+      Publication publication = ((Publication) iterator_8.next());
+      if (Utils.equals(publication.getId(), publicationId)) {
+        iotaCounter_2++;
+        if (iotaCounter_2.longValue() > 1L) {
+          throw new RuntimeException("Iota selects more than one result");
+        } else {
+          iotaExp_2 = publication;
+        }
+      }
+    }
+    if (Utils.equals(iotaCounter_2, 0L)) {
+      throw new RuntimeException("Iota selects more than one result");
+    }
+
+    {
+      final Publication publication = iotaExp_2;
+      publication.removeLike(user);
+    }
+  }
+
+  public VDMSet searchUser(final String searchText) {
+
+    VDMSet setCompResult_2 = SetUtil.set();
+    VDMSet set_11 = Utils.copy(users);
+    for (Iterator iterator_12 = set_11.iterator(); iterator_12.hasNext(); ) {
+      User user = ((User) iterator_12.next());
+      if (user.nameContains(searchText)) {
+        setCompResult_2.add(user);
+      }
+    }
+    return Utils.copy(setCompResult_2);
   }
 
   public VDMSet searchPublications(final User searcher, final String searchText) {
 
-    VDMSet setCompResult_2 = SetUtil.set();
     VDMSet setCompResult_3 = SetUtil.set();
-    VDMSet set_10 = Utils.copy(users);
-    for (Iterator iterator_12 = set_10.iterator(); iterator_12.hasNext(); ) {
-      User user = ((User) iterator_12.next());
+    VDMSet setCompResult_4 = SetUtil.set();
+    VDMSet set_15 = Utils.copy(users);
+    for (Iterator iterator_17 = set_15.iterator(); iterator_17.hasNext(); ) {
+      User user = ((User) iterator_17.next());
       if (!(Utils.equals(user, searcher))) {
-        setCompResult_3.add(SeqUtil.elems(user.getPublications(searcher)));
+        setCompResult_4.add(SeqUtil.elems(user.getPublications(searcher)));
       }
     }
-    VDMSet set_9 = SetUtil.dunion(Utils.copy(setCompResult_3));
-    for (Iterator iterator_11 = set_9.iterator(); iterator_11.hasNext(); ) {
-      Publication publication = ((Publication) iterator_11.next());
+    VDMSet set_14 = SetUtil.dunion(Utils.copy(setCompResult_4));
+    for (Iterator iterator_16 = set_14.iterator(); iterator_16.hasNext(); ) {
+      Publication publication = ((Publication) iterator_16.next());
       if (publication.contentContains(searchText)) {
-        setCompResult_2.add(publication);
+        setCompResult_3.add(publication);
       }
     }
-    return Utils.copy(setCompResult_2);
+    return Utils.copy(setCompResult_3);
   }
 
   public VDMSeq getUserTimeline(final User searcher, final User user) {
@@ -127,18 +191,18 @@ public class Facebook {
 
   public VDMSeq getUserFeed(final User user) {
 
-    VDMSet setCompResult_4 = SetUtil.set();
     VDMSet setCompResult_5 = SetUtil.set();
-    VDMSet set_13 = Utils.copy(users);
-    for (Iterator iterator_15 = set_13.iterator(); iterator_15.hasNext(); ) {
-      User member = ((User) iterator_15.next());
+    VDMSet setCompResult_6 = SetUtil.set();
+    VDMSet set_18 = Utils.copy(users);
+    for (Iterator iterator_20 = set_18.iterator(); iterator_20.hasNext(); ) {
+      User member = ((User) iterator_20.next());
       if (!(Utils.equals(user, member))) {
-        setCompResult_5.add(SeqUtil.elems(getUserTimeline(user, member)));
+        setCompResult_6.add(SeqUtil.elems(getUserTimeline(user, member)));
       }
     }
-    VDMSet set_12 = SetUtil.dunion(Utils.copy(setCompResult_5));
-    for (Iterator iterator_14 = set_12.iterator(); iterator_14.hasNext(); ) {
-      Publication publication = ((Publication) iterator_14.next());
+    VDMSet set_17 = SetUtil.dunion(Utils.copy(setCompResult_6));
+    for (Iterator iterator_19 = set_17.iterator(); iterator_19.hasNext(); ) {
+      Publication publication = ((Publication) iterator_19.next());
       Boolean orResult_3 = false;
 
       if (SetUtil.inSet(publication.getAuthor(), user.friends)) {
@@ -148,13 +212,13 @@ public class Facebook {
       }
 
       if (orResult_3) {
-        setCompResult_4.add(publication);
+        setCompResult_5.add(publication);
       }
     }
-    VDMSet allPublications = Utils.copy(setCompResult_4);
+    VDMSet allPublications = Utils.copy(setCompResult_5);
     VDMSeq seqOfPubs = SeqUtil.seq();
-    for (Iterator iterator_38 = allPublications.iterator(); iterator_38.hasNext(); ) {
-      Publication publication = (Publication) iterator_38.next();
+    for (Iterator iterator_48 = allPublications.iterator(); iterator_48.hasNext(); ) {
+      Publication publication = (Publication) iterator_48.next();
       seqOfPubs =
           SeqUtil.conc(
               Utils.copy(seqOfPubs),
@@ -173,8 +237,8 @@ public class Facebook {
     VDMSet unsortedSuggestions = SetUtil.diff(user.getFriendsOfFriends(), user.friends);
     VDMSeq scoredSuggestions = SeqUtil.seq();
     VDMSeq sortedSuggestions = SeqUtil.seq();
-    for (Iterator iterator_39 = unsortedSuggestions.iterator(); iterator_39.hasNext(); ) {
-      User suggestion = (User) iterator_39.next();
+    for (Iterator iterator_49 = unsortedSuggestions.iterator(); iterator_49.hasNext(); ) {
+      User suggestion = (User) iterator_49.next();
       scoredSuggestions =
           SeqUtil.conc(
               Utils.copy(scoredSuggestions),
@@ -199,7 +263,7 @@ public class Facebook {
             > ((PublicationRank) Utils.get(sorted_list, j.longValue() + 1L)).score.longValue()) {
           orResult_4 = true;
         } else {
-          Boolean andResult_18 = false;
+          Boolean andResult_22 = false;
 
           if (Utils.equals(
               ((PublicationRank) Utils.get(sorted_list, j)).score,
@@ -209,11 +273,11 @@ public class Facebook {
                     .publication
                     .getTimestamp()
                     .longValue()) {
-              andResult_18 = true;
+              andResult_22 = true;
             }
           }
 
-          orResult_4 = andResult_18;
+          orResult_4 = andResult_22;
         }
 
         if (orResult_4) {
@@ -227,9 +291,9 @@ public class Facebook {
       }
     }
     VDMSeq seqCompResult_1 = SeqUtil.seq();
-    VDMSet set_14 = SeqUtil.inds(sorted_list);
-    for (Iterator iterator_16 = set_14.iterator(); iterator_16.hasNext(); ) {
-      Number i = ((Number) iterator_16.next());
+    VDMSet set_19 = SeqUtil.inds(sorted_list);
+    for (Iterator iterator_21 = set_19.iterator(); iterator_21.hasNext(); ) {
+      Number i = ((Number) iterator_21.next());
       seqCompResult_1.add(((PublicationRank) Utils.get(sorted_list, i)).publication);
     }
     return Utils.copy(seqCompResult_1);
@@ -250,7 +314,7 @@ public class Facebook {
             < ((UserRank) Utils.get(sorted_list, j.longValue() + 1L)).score.longValue()) {
           orResult_5 = true;
         } else {
-          Boolean andResult_19 = false;
+          Boolean andResult_23 = false;
 
           if (Utils.equals(
               ((UserRank) Utils.get(sorted_list, j)).score,
@@ -260,11 +324,11 @@ public class Facebook {
                     .user
                     .getNameLength()
                     .longValue()) {
-              andResult_19 = true;
+              andResult_23 = true;
             }
           }
 
-          orResult_5 = andResult_19;
+          orResult_5 = andResult_23;
         }
 
         if (orResult_5) {
@@ -276,9 +340,9 @@ public class Facebook {
       }
     }
     VDMSeq seqCompResult_2 = SeqUtil.seq();
-    VDMSet set_15 = SeqUtil.inds(sorted_list);
-    for (Iterator iterator_17 = set_15.iterator(); iterator_17.hasNext(); ) {
-      Number i = ((Number) iterator_17.next());
+    VDMSet set_20 = SeqUtil.inds(sorted_list);
+    for (Iterator iterator_22 = set_20.iterator(); iterator_22.hasNext(); ) {
+      Number i = ((Number) iterator_22.next());
       seqCompResult_2.add(((UserRank) Utils.get(sorted_list, i)).user);
     }
     return Utils.copy(seqCompResult_2);
