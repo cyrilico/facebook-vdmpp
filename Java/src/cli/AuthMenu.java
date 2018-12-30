@@ -39,7 +39,7 @@ class AuthMenu extends AbstractMenu {
         }
 
         if (user != null) {
-            MainMenu mainMenu = new MainMenu(true, facebook, user);
+            MainMenu mainMenu = new MainMenu(false, facebook, user);
             mainMenu.getOptions();
         }
 

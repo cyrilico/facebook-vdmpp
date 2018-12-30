@@ -78,4 +78,8 @@ abstract class AbstractMenu {
     private void printInvalidInputMessage() {
         System.out.println("Invalid input!!!");
     }
+
+    private void printSucessMessage() {
+        System.out.println("Operation succeed!!!");
+    }
 }

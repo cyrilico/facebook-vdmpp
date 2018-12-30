@@ -35,8 +35,7 @@ class SearchMenu extends AbstractMenu {
             case BACK_INPUT:
                 return;
             case MENU_INPUT:
-                mainMenu.getOptions();
-                break;
+                return;
         }
     }
 
