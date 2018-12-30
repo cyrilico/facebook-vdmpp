@@ -1,5 +1,8 @@
 package cli;
 
+import vdm.Facebook;
+import vdm.User;
+
 import java.util.ArrayList;
 
 class MainMenu extends AbstractMenu {
@@ -7,9 +10,13 @@ class MainMenu extends AbstractMenu {
     private TimelineMenu timelineMenu = new TimelineMenu(true, this);
     private GroupChatMenu groupChatMenu = new GroupChatMenu(true, this);
     private PublicationMenu publicationMenu = new PublicationMenu(true, this);
+    private Facebook facebook;
+    private User user;
 
-    MainMenu(boolean hasParent) {
+    MainMenu(boolean hasParent, Facebook facebook, User user) {
         super(hasParent);
+        this.facebook = facebook;
+        this.user = user;
     }
 
     @Override
@@ -21,7 +28,7 @@ class MainMenu extends AbstractMenu {
         options.add("Timeline");
         options.add("GroupChat");
         options.add("Posts");
-        options.add("Exit");
+        options.add("Logout");
 
         String input = printAndSelectOptions(options);
         switch (input) {
@@ -41,8 +48,10 @@ class MainMenu extends AbstractMenu {
                 publicationMenu.getOptions();
                 getOptions();
                 break;
-            case "Exit":
+            case "Logout":
                 break;
         }
     }
+
+
 }
