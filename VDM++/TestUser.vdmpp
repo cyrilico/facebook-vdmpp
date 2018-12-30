@@ -3,12 +3,37 @@ class TestUser is subclass of Test
 instance variables
 	
 operations
+		-- Test scenario where users add each other to their friends list
+		-- Covers the respective scenario described in section 2.1 and requirement R4
+		protected testFriendship: () ==> ()
+			testFriendship() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+			);
+
+		-- Test scenario where users add other users to their blocked users list
+		-- Covers the respective scenario described in section 2.1 and requirement R5
+		protected testBlocking: () ==> ()
+			testBlocking() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+			);
+			
+		-- Test scenario where a user checks other users' timeline
+		-- Covers requirement R10
+		protected testTimeline: () ==> ()
+			testTimeline() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+			);
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning User Tests\n");
-								
-					
-				IO`println("\nUser Tests ran successfully\n");
+				IO`println("Running User Tests\n");
+				testFriendship();
+				testBlocking();
+				testTimeline();
+				IO`println("User Tests ran successfully\n");
 			);
 
 end TestUser

@@ -1,30 +1,25 @@
 class TestFacebook is subclass of Test
 
-instance variables
-	u1 : User;
-	u2 : User;
-	u3 : User;
-	u4 : User;
-	u5 : User;
-	u6 : User;
-	u7 : User;
-	u8 : User;
-	u9 : User;
-	
-operations
-		protected setupUsers: () ==> ()
-		setupUsers() == (
-			u1 := new User("user1");
-			u2 := new User("user2");
-			u3 := new User("user3");
-			u4 := new User("user4");
-			u5 := new User("user5");
-			u6 := new User("user6");
-			u7 := new User("user7");
-			u8 := new User("user8");
-			u9 := new User("user9");
-		);
+instance variables	
+operations		
+		-- Test scenario where users are added into the platform (registration)
+		-- Covers the respective scenario described in section 2.1 and requirement R1
+		protected testRegistration: () ==> ()
+			testRegistration() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+			);
 		
+		-- Test scenario where users are looked up by their names
+		-- Covers requirement R2
+		protected testUserSearch: () ==> ()
+			testUserSearch() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+			);
+		
+		-- Test scenario where a user checks his main feed to assess the most relevant content for him
+		-- Covers the respective scenario described in section 2.1 and requirement R11
 		protected testFeed: () ==> ()
 			testFeed() == (
 				facebook := Facebook`clearInstance();
@@ -43,6 +38,8 @@ operations
 				assertTrue(len facebook.getUserFeed(u4) = 0);
 			);
 		
+		-- Test scenario where users receive potential friend suggestions
+		-- Covers requirement R9
 		protected testFriendSuggestions: () ==> ()
 			testFriendSuggestions() == (
 				dcl userSeq: seq of User;
@@ -82,12 +79,12 @@ operations
 			
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning Facebook Tests\n");
-				
+				IO`println("Running Facebook Tests\n");
+				testRegistration();
+				testUserSearch();
 				testFeed();
 				testFriendSuggestions();
-				
-				IO`println("\nFacebook Tests ran successfully\n");
+				IO`println("Facebook Tests ran successfully\n");
 			);
 
 end TestFacebook

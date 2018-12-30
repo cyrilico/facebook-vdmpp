@@ -3,12 +3,28 @@ class TestPublication is subclass of Test
 instance variables
 	
 operations
+	-- Test scenario where publications are looked up by their content
+	-- Covers requirement R3
+	protected testPublicationSearch: () ==> ()
+		testPublicationSearch() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
+		);
+
+	-- Test scenario where a user manages his timeline (make, update, delete publications)
+	-- Covers the respective scenario described in section 2.1 and requirement R6
+	protected testTimelineUpdate: () ==> ()
+		testTimelineUpdate() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
+		);
+		
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning Publication Tests\n");
-								
-					
-				IO`println("\nPublication Tests ran successfully\n");
+				IO`println("Running Publication Tests\n");
+				testPublicationSearch();
+				testTimelineUpdate();
+				IO`println("Publication Tests ran successfully\n");
 			);
 
 end TestPublication

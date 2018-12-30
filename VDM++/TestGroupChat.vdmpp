@@ -3,12 +3,28 @@ class TestGroupChat is subclass of Test
 instance variables
 	
 operations			
+	-- Test scenario where users create chats with other users and communicate in it
+	-- Covers the respective scenario described in section 2.1 and requirement R7
+	protected testGroupChatCommunication: () ==> ()
+		testGroupChatCommunication() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
+		);
+
+	-- Test scenario where publications are looked up by their content
+	-- Covers requirement R8
+	protected testGroupChatSearchAndFilter: () ==> ()
+		testGroupChatSearchAndFilter() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
+		);
+		
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning GroupChat Tests\n");
-								
-					
-				IO`println("\nGroupChat Tests ran successfully\n");
+				IO`println("Running GroupChat Tests\n");
+				testGroupChatCommunication();
+				testGroupChatSearchAndFilter();
+				IO`println("GroupChat Tests ran successfully\n");
 			);
 
 end TestGroupChat
