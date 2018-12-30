@@ -3,7 +3,6 @@ package cli;
 import org.overture.codegen.runtime.VDMSeq;
 import vdm.Date;
 import vdm.Publication;
-import vdm.User;
 
 import java.util.ArrayList;
 
@@ -112,7 +111,7 @@ class PublicationMenu extends AbstractMenu {
             month = Integer.parseInt(scanner.nextLine());
             System.out.print("Enter day: ");
             day = Integer.parseInt(scanner.nextLine());
-        } while(!Date.isValidDate(year, month, day));
+        } while (!Date.isValidDate(year, month, day));
 
         return Date.makeDate(year, month, day);
     }
