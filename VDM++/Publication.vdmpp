@@ -31,6 +31,12 @@ operations
       pre PublicationContent <> ""
       post idCounter = idCounter~ + 1 and author = PublicationAuthor and content = PublicationContent and timestamp = PublicationTimestamp and likes = {} and permissions = PublicationPermissions;
   
+  -- Unique ID counter reset
+  public static resetIDCounter: () ==> ()
+  		resetIDCounter() == (
+  			idCounter := 1;
+  		);
+  		
   -- ID getter
   pure public getId: () ==> nat1
   		getId() == return id
@@ -56,10 +62,9 @@ operations
   		userHasPermissions(user) == (
   			cases permissions:
   			<Public> -> return user not in set author.getBlockedUsers(),
-  			<Friends> -> return user in set author.getFriends() union {author},
-  			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author},
-  			<TransitiveConnection> -> return user in set author.getFriendsTransitiveClosure() union {author},
-  			others -> return user not in set author.getBlockedUsers()
+  			<Friends> -> return user in set author.getFriends() union {author} \ author.getBlockedUsers(),
+  			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author} \ author.getBlockedUsers(),
+  			others -> return user in set author.getFriendsTransitiveClosure() union {author} \ author.getBlockedUsers() -- permissions = <TransitiveConnection>
   			end
   		);
   

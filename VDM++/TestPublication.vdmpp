@@ -9,6 +9,36 @@ operations
 		testPublicationSearch() == (
 			facebook := Facebook`clearInstance();
 			setupUsers();
+			
+			
+			facebook.addUsers({u1,u2,u3,u4,u5,u6,u7});
+			
+			-- set up some friendships
+			facebook.addFriendship(u1,u2);
+			facebook.addFriendship(u1,u3);
+			facebook.addFriendship(u2,u4);
+			facebook.addFriendship(u4,u5);
+			facebook.addFriendship(u5,u6);
+			
+			-- create publications
+			u1.makePublication("greetings, eager young minds", Date`makeDate(2016,12,12), <TransitiveConnection>); --ID 1
+			u1.makePublication("greetings, friends", Date`makeDate(2016,12,13), <Friends>); --ID 2
+			u1.makePublication("fear me, friends, for i am back", Date`makeDate(2017,12,17), <Public>); --ID 3
+			u2.makePublication("back, looking for new friendships", Date`makeDate(2017,01,01), <FriendsOfFriends>); --ID 4
+			u3.makePublication("what do i need friends for? popularity, of course", Date`makeDate(2018,01,13), <Friends>); --ID 5
+			
+			-- search from different user's perspectives
+			assertEqual(facebook.searchPublications(u6, "greetings"), {u1.getPublicationById(1)}); -- Publications ID 1 and 2 have text. 1 was found by friends' closure, but 2 is restricted to u2's friends
+			u1.blockUser(u6);			
+			assertEqual(facebook.searchPublications(u6, "greetings"), {}); -- Blocked by u1, so now can't see the publication found earlier
+			
+			assertEqual(facebook.searchPublications(u5, "friends"), {u1.getPublicationById(3), u2.getPublicationById(4)});
+			u1.updatePublicationPermissions(2, <Public>);
+			assertEqual(facebook.searchPublications(u5, "friends"), {u1.getPublicationById(2), u1.getPublicationById(3), u2.getPublicationById(4)}); -- Now has ID 2 as well, since it was made public
+			
+			assertEqual(facebook.searchPublications(u3, "greetings"), {u1.getPublicationById(1), u1.getPublicationById(2)});
+			facebook.removeFriendship(u1,u3);
+			assertEqual(facebook.searchPublications(u3, "greetings"), {u1.getPublicationById(2)});
 		);
 
 	-- Test scenario where a user manages his timeline (make, update, delete publications)
@@ -23,7 +53,7 @@ operations
 			u1.makePublication("my first publication", Date`makeDate(2016,12,12), <Public>); --ID: 1
 			u1.makePublication("so, how is everybody doing", Date`makeDate(2017,01,01), <Public>); --ID: 2
 			u1.makePublication("hello, but only to my friends!", Date`makeDate(2017,02,14), <Friends>); --ID: 3
-			
+
 			assertEqual(u1.getPublicationById(1).getContent(), "my first publication");
 			assertEqual(len facebook.getUserTimeline(u1,u1), 3); --3 posts made 
 			assertEqual(u1.getPublicationById(3).getPermissions(), <Friends>);

@@ -106,7 +106,6 @@ operations
 				-- Testing case where target user has no friends
 				userSeq := facebook.getFriendSuggestions(u9);
 				assertEqual(0, len userSeq);
-										
 		);
 		
 			

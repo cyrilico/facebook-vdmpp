@@ -18,7 +18,10 @@ instance variables
 operations
 	-- Constructor
   private Facebook: () ==> Facebook
-    Facebook() == return self
+    Facebook() == (
+    	users := {};
+    	return self;
+    )
     post users = {};
   
   -- Singleton getter
@@ -29,6 +32,7 @@ operations
   public static clearInstance: () ==> Facebook
   	clearInstance() == (
   		globalInstance := new Facebook();
+  		Publication`resetIDCounter();
   		return getInstance();
   	);
   
@@ -114,7 +118,7 @@ operations
   public searchPublications: User * String ==> set of Publication
   		searchPublications(searcher, searchText) == (
   			return {publication | 
-  				publication in set dunion {elems user.getPublications(searcher) | user in set users} 
+  				publication in set dunion {elems user.getPublications(searcher) | user in set users & user <> searcher} 
   				& publication.contentContains(searchText)} 
   		)
   		pre searcher in set users
