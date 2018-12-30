@@ -1,7 +1,6 @@
 package cli;
 
 import org.overture.codegen.runtime.VDMSeq;
-import vdm.Publication;
 import vdm.User;
 
 import java.util.ArrayList;
@@ -40,37 +39,12 @@ class TimelineMenu extends AbstractMenu {
 
     private void seeMainFeed() {
         VDMSeq mainFeed = mainMenu.facebook.getUserFeed(mainMenu.user);
-        for (Object p1 : mainFeed) {
-            Publication post = (Publication) p1;
-            System.out.println("Post " + post.getId() + "| Author: " + post.getAuthor().getName() + "| Date: " + post.getTimestamp() + "| Likes: " + post.getLikes().size());
-            System.out.println("Content " + post.getContent());
-        }
+        Utils.printPostsSEQ(mainFeed);
     }
 
     private void seeTimelineByUser() {
-        User user2 = getUser();
+        User user2 = Utils.getUser(scanner, mainMenu);
         VDMSeq timelineByUser = mainMenu.facebook.getUserTimeline(mainMenu.user, user2);
-        for (Object p1 : timelineByUser) {
-            Publication post = (Publication) p1;
-            System.out.println("Post " + post.getId() + "| Author: " + post.getAuthor().getName() + "| Date: " + post.getTimestamp() + "| Likes: " + post.getLikes().size());
-            System.out.println("Content " + post.getContent());
-        }
-    }
-
-    //TODO: Extract this method
-    private User getUser() {
-        User user;
-        int i = 3;
-
-        do {
-            System.out.print("Enter username: ");
-            String username = scanner.nextLine();
-            user = mainMenu.facebook.getUserByName(username);
-            if (user == null)
-                System.out.println("User not found");
-            i--;
-        } while (user == null && i > 0);
-
-        return user;
+        Utils.printPostsSEQ(timelineByUser);
     }
 }

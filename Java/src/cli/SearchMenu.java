@@ -1,8 +1,6 @@
 package cli;
 
 import org.overture.codegen.runtime.VDMSet;
-import vdm.Publication;
-import vdm.User;
 
 import java.util.ArrayList;
 
@@ -26,17 +24,16 @@ class SearchMenu extends AbstractMenu {
         switch (input) {
             case "Search an User":
                 searchUsers();
-                getOptions();
                 break;
             case "Search a Post":
                 searchPosts();
-                getOptions();
                 break;
             case BACK_INPUT:
-                return;
             case MENU_INPUT:
                 return;
         }
+
+        getOptions();
     }
 
     private void searchUsers() {
@@ -49,11 +46,7 @@ class SearchMenu extends AbstractMenu {
             return;
         }
 
-        for (Object u1 : users) {
-            User user = (User) u1;
-            System.out.println("Name: " + user.getName() + "| no. friends: " + user.getFriends().size());
-        }
-
+        Utils.printUsersSET(users);
     }
 
     private void searchPosts() {
@@ -66,11 +59,7 @@ class SearchMenu extends AbstractMenu {
             return;
         }
 
-        for (Object p1 : posts) {
-            Publication post = (Publication) p1;
-            System.out.println("Post " + post.getId() + "| Author: " + post.getAuthor().getName() + "| Date: " + post.getTimestamp() + "| Likes: " + post.getLikes().size());
-            System.out.println("Content " + post.getContent());
-        }
+        Utils.printPostsSET(posts);
     }
 
 }

@@ -48,15 +48,7 @@ class PublicationMenu extends AbstractMenu {
 
     private void seePosts() {
         VDMSeq posts = mainMenu.facebook.getUserTimeline(mainMenu.user, mainMenu.user);
-        for (Object p1 : posts) {
-            Publication post = (Publication) p1;
-            System.out.println("Post " + post.getId());
-            System.out.println("Content " + post.getContent());
-            System.out.println("Date " + post.getTimestamp());
-            System.out.println("Author " + post.getAuthor().getName());
-            System.out.println("Likes " + post.getLikes());
-            System.out.println("Permissions: " + post.getPermissions().toString());
-        }
+        Utils.printPostsSEQ(posts);
     }
 
     private void newPost() {

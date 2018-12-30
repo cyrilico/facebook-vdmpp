@@ -36,28 +36,24 @@ class MainMenu extends AbstractMenu {
         switch (input) {
             case "Search":
                 searchMenu.getOptions();
-                getOptions();
                 break;
             case "Timeline":
                 timelineMenu.getOptions();
-                getOptions();
                 break;
             case "Posts":
                 publicationMenu.getOptions();
-                getOptions();
                 break;
             case "Friends":
                 friendsMenu.getOptions();
-                getOptions();
                 break;
             case "Chat":
                 groupChatMenu.getOptions();
-                getOptions();
                 break;
             case "Logout":
-                break;
+                return;
         }
-    }
 
+        getOptions();
+    }
 
 }
