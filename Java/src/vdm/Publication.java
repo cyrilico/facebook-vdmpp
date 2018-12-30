@@ -35,9 +35,19 @@ public class Publication extends Message {
         PublicationAuthor, PublicationContent, PublicationTimestamp, PublicationPermissions);
   }
 
+  public static void resetIDCounter() {
+
+    idCounter = 1L;
+  }
+
   public Number getId() {
 
     return id;
+  }
+
+  public Object getPermissions() {
+
+    return permissions;
   }
 
   public void updatePermissions(final Object newPermissions) {
@@ -58,26 +68,26 @@ public class Publication extends Message {
         Object quotePattern_3 = permissions;
         success_3 = Utils.equals(quotePattern_3, vdm.quotes.FriendsOfFriendsQuote.getInstance());
 
-        if (!(success_3)) {
-          Object quotePattern_4 = permissions;
-          success_3 =
-              Utils.equals(quotePattern_4, vdm.quotes.TransitiveConnectionQuote.getInstance());
-
-          if (success_3) {
-            return SetUtil.inSet(
-                user, SetUtil.union(author.getFriendsTransitiveClosure(), SetUtil.set(author)));
-
-          } else {
-            return !(SetUtil.inSet(user, author.getBlockedUsers()));
-          }
+        if (success_3) {
+          return SetUtil.inSet(
+              user,
+              SetUtil.diff(
+                  SetUtil.union(author.getFriendsOfFriends(), SetUtil.set(author)),
+                  author.getBlockedUsers()));
 
         } else {
           return SetUtil.inSet(
-              user, SetUtil.union(author.getFriendsOfFriends(), SetUtil.set(author)));
+              user,
+              SetUtil.diff(
+                  SetUtil.union(author.getFriendsTransitiveClosure(), SetUtil.set(author)),
+                  author.getBlockedUsers()));
         }
 
       } else {
-        return SetUtil.inSet(user, SetUtil.union(author.getFriends(), SetUtil.set(author)));
+        return SetUtil.inSet(
+            user,
+            SetUtil.diff(
+                SetUtil.union(author.getFriends(), SetUtil.set(author)), author.getBlockedUsers()));
       }
 
     } else {
