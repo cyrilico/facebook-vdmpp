@@ -17,7 +17,13 @@ abstract class AbstractMenu {
 
     }
 
-    String printOptions(ArrayList<String> options, boolean hasParent) {
+    String printAndSelectOptions(ArrayList<String> options, boolean hasParent) {
+        printOptions(options, hasParent);
+
+        return selectOptions(options, hasParent);
+    }
+
+    private void printOptions(ArrayList<String> options, boolean hasParent) {
         for (int i = 0; i < options.size(); i++) {
             System.out.println((i + 1) + "- " + options.get(i));
         }
@@ -27,9 +33,12 @@ abstract class AbstractMenu {
         }
 
         System.out.print("Select one of the options: ");
+    }
 
+    private String selectOptions(ArrayList<String> options, boolean hasParent) {
         boolean validInput = false;
         String input = "";
+
         while (!validInput) {
             input = scanner.nextLine();
             validInput = isValidInput(options, hasParent, input);
@@ -37,7 +46,6 @@ abstract class AbstractMenu {
                 printInvalidInputMessage();
             }
         }
-
 
         if (input.equals(BACK_INPUT) || input.equals(MENU_INPUT)) {
             return input;
@@ -52,14 +60,11 @@ abstract class AbstractMenu {
                 return true;
             }
         }
+
         try {
             int i = Integer.parseInt(input);
+            return (i > 0 && i <= options.size());
 
-            if (i > 0 && i <= options.size()) {
-                return true;
-            } else {
-                return false;
-            }
         } catch (Exception e) {
             return false;
         }
@@ -67,6 +72,5 @@ abstract class AbstractMenu {
 
     private void printInvalidInputMessage() {
         System.out.println("Invalid input!!!");
-
     }
 }
