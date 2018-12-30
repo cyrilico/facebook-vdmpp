@@ -8,7 +8,6 @@ import java.util.ArrayList;
 class AuthMenu extends AbstractMenu {
     private Facebook facebook;
     private Auth auth;
-    private MainMenu mainMenu;
 
     AuthMenu(boolean hasParent, Facebook facebook) {
         super(hasParent);
@@ -40,8 +39,8 @@ class AuthMenu extends AbstractMenu {
         }
 
         if (user != null) {
-            this.mainMenu = new MainMenu(true, facebook, user);
-            this.mainMenu.getOptions();
+            MainMenu mainMenu = new MainMenu(true, facebook, user);
+            mainMenu.getOptions();
         }
 
         getOptions();

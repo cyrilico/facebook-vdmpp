@@ -7,7 +7,7 @@ abstract class AbstractMenu {
     static final String BACK_INPUT = "b";
     static final String MENU_INPUT = "m";
 
-    private Scanner scanner = new Scanner(System.in);
+    Scanner scanner = new Scanner(System.in);
     private boolean hasParent;
 
     AbstractMenu(boolean hasParent) {
