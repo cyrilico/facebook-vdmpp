@@ -3,9 +3,17 @@ types
 	public String = seq1 of char;
 	-- Class private type to use in publication sorting for main feed generation
 	protected PublicationRank :: publication: Publication
-															 score: nat;
+															 score: nat
+		ord mk_PublicationRank(p1,s1) < mk_PublicationRank(p2,s2) ==
+  	s1 < s2 or
+  	s1 = s2 and p1.getTimestamp() < p2.getTimestamp();
+  	
 	protected UserRank :: user: User
-															 score: nat;
+															 score: nat
+		ord mk_UserRank(u1,s1) < mk_UserRank(u2,s2) ==
+  	s1 < s2 or
+  	s1 = s2 and u1.getNameLength() < u2.getNameLength();
+  	
 values
 instance variables
   public users: set of User := {};
@@ -13,8 +21,7 @@ instance variables
   private static globalInstance: Facebook := new Facebook();
   
   -- User name uniqueness
-  inv not exists user1, user2 in set users & user1 <> user2 and user1.getName() = user2.getName();
-  
+  inv not exists user1, user2 in set users & user1 <> user2 and user1.getName() = user2.getName();  
 operations
 	-- Constructor
   private Facebook: () ==> Facebook
@@ -33,6 +40,7 @@ operations
   	clearInstance() == (
   		globalInstance := new Facebook();
   		Publication`resetIDCounter();
+  		ChatMessage`resetIDCounter();
   		return getInstance();
   	);
   
@@ -183,9 +191,8 @@ operations
 				
 				return sortedSuggestions(1,...,5)
 			)
-			pre user in set users;
-			--post elems RESULT not in set user.friends and elems RESULT not in set user.getBlockedUsers();
-			-- TODO: make an actual post condition
+			pre user in set users
+			post elems RESULT inter user.friends = {} and elems RESULT inter user.getBlockedUsers() = {};
 			
 	-- Sorts publications using bubble sort
 	protected sortPublications: seq of PublicationRank ==> seq of Publication
@@ -193,9 +200,7 @@ operations
 				dcl sorted_list: seq of PublicationRank := publications;
 				for i = len publications to 1 by -1 do 
 					for j = 1 to i-1 do 
-						if sorted_list(j).score > sorted_list(j+1).score 
-							 or sorted_list(j).score = sorted_list(j+1).score
-							 and sorted_list(j).publication.getTimestamp() > sorted_list(j+1).publication.getTimestamp() then 
+						if sorted_list(j+1) < sorted_list(j) then 
 							(dcl temp: PublicationRank := sorted_list(j); 
 							sorted_list(j) := sorted_list(j+1); 
 							sorted_list(j+1) := temp
@@ -209,9 +214,7 @@ operations
 			dcl sorted_list: seq of UserRank := suggestions;
 			for i = len suggestions to 1 by -1 do 
 				for j = 1 to i-1 do 
-					if sorted_list(j).score < sorted_list(j+1).score 
-						 or sorted_list(j).score = sorted_list(j+1).score
-						 and sorted_list(j).user.getNameLength() > sorted_list(j+1).user.getNameLength() then 
+					if sorted_list(j+1) < sorted_list(j+1) then 
 						(dcl temp: UserRank := sorted_list(j); 
 						sorted_list(j) := sorted_list(j+1); 
 						sorted_list(j+1) := temp

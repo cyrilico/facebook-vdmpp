@@ -41,19 +41,4 @@ class Date
       makeDate(year, month, day) == 
         year * 10000 + month * 100 + day
       pre isValidDate(year, month, day);
- 	
- 		-- Year getter
-    public static getYear: Date -> nat
-      getYear(d) == 
-        d div 10000;
-    
-    -- Month getter
-    public static getMonth: Date -> nat
-      getMonth(d) == 
-        (d div 100) mod 100;
-    
-    -- Day getter
-    public static getDay: Date -> nat
-      getDay(d) == 
-        d mod 100;
 end Date

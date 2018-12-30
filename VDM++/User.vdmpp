@@ -224,17 +224,6 @@ operations
 			)
 			pre chatName in set dom chats;
 	
-	-- Filter messages in chat between a specific period
-	-- IN chatName - chat to filter
-	-- IN beginningDate - optional start of the period. Defaults to 1-1-1
-	-- IN endDate - optional end of the period. Defaults to 31-12-9999
-	-- OUT chat messages in the given period
-	public filterDateInChat: String * [Date] * [Date] ==> seq of ChatMessage
-			filterDateInChat(chatName, beginningDate, endDate) == (
-				return chats(chatName).getMessagesBetween(beginningDate, endDate);
-			)
-			pre chatName in set dom chats;
-	
 	-- Block a user (that cannot be a friend - guaranteed by invariant)
 	-- IN userBlocked - user to be blocked
 	public blockUser: User ==> ()
