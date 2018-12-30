@@ -3,15 +3,125 @@ class TestPublication is subclass of Test
 instance variables
 	
 operations
-	protected Setup: () ==> ()
-			Setup() == is not yet specified;
+	-- Test scenario where publications are looked up by their content
+	-- Covers requirement R7
+	protected testPublicationSearch: () ==> ()
+		testPublicationSearch() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
 			
+			
+			facebook.addUsers({u1,u2,u3,u4,u5,u6,u7});
+			
+			-- set up some friendships
+			facebook.addFriendship(u1,u2);
+			facebook.addFriendship(u1,u3);
+			facebook.addFriendship(u2,u4);
+			facebook.addFriendship(u4,u5);
+			facebook.addFriendship(u5,u6);
+			
+			-- create publications
+			u1.makePublication("greetings, eager young minds", Date`makeDate(2016,12,12), <TransitiveConnection>); --ID 1
+			u1.makePublication("greetings, friends", Date`makeDate(2016,12,13), <Friends>); --ID 2
+			u1.makePublication("fear me, friends, for i am back", Date`makeDate(2017,12,17), <Public>); --ID 3
+			u2.makePublication("back, looking for new friendships", Date`makeDate(2017,01,01), <FriendsOfFriends>); --ID 4
+			u3.makePublication("what do i need friends for? popularity, of course", Date`makeDate(2018,01,13), <Friends>); --ID 5
+			
+			-- search from different user's perspectives
+			assertEqual(facebook.searchPublications(u6, "greetings"), {u1.getPublicationById(1)}); -- Publications ID 1 and 2 have text. 1 was found by friends' closure, but 2 is restricted to u2's friends
+			u1.blockUser(u6);			
+			assertEqual(facebook.searchPublications(u6, "greetings"), {}); -- Blocked by u1, so now can't see the publication found earlier
+			
+			assertEqual(facebook.searchPublications(u5, "friends"), {u1.getPublicationById(3), u2.getPublicationById(4)});
+			u1.updatePublicationPermissions(2, <Public>);
+			assertEqual(facebook.searchPublications(u5, "friends"), {u1.getPublicationById(2), u1.getPublicationById(3), u2.getPublicationById(4)}); -- Now has ID 2 as well, since it was made public
+			
+			assertEqual(facebook.searchPublications(u3, "greetings"), {u1.getPublicationById(1), u1.getPublicationById(2)});
+			facebook.removeFriendship(u1,u3);
+			assertEqual(facebook.searchPublications(u3, "greetings"), {u1.getPublicationById(2)});
+		);
+
+	-- Test scenario where a user manages his timeline (make, update, delete publications)
+	-- Covers the respective scenario described in section 2.1 and requirement R5
+	protected testTimelineUpdate: () ==> ()
+		testTimelineUpdate() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
+			
+			facebook.addUser(u1);
+			-- make new publications
+			u1.makePublication("my first publication", Date`makeDate(2016,12,12), <Public>); --ID: 1
+			u1.makePublication("so, how is everybody doing", Date`makeDate(2017,01,01), <Public>); --ID: 2
+			u1.makePublication("hello, but only to my friends!", Date`makeDate(2017,02,14), <Friends>); --ID: 3
+
+			assertEqual(u1.getPublicationById(1).getContent(), "my first publication");
+			assertEqual(len facebook.getUserTimeline(u1,u1), 3); --3 posts made 
+			assertEqual(u1.getPublicationById(3).getPermissions(), <Friends>);
+			
+			-- update existing publications' permissions
+			u1.updatePublicationPermissions(1, <FriendsOfFriends>);
+			u1.updatePublicationPermissions(3, <Public>);
+			
+			assertEqual(u1.getPublicationById(1).getPermissions(), <FriendsOfFriends>);
+			assertEqual(u1.getPublicationById(3).getPermissions(), <Public>);
+			assertEqual(len facebook.getUserTimeline(u1,u1), 3); -- no addition or deletion, just modification, so still 3 posts
+			
+			-- delete existing publications
+			u1.deletePublication(2);
+			assertEqual(u1.getPublicationById(1).getContent(), "my first publication"); -- ID 1 still exists
+			assertEqual(u1.getPublicationById(3).getContent(), "hello, but only to my friends!"); -- ID 3 still exists
+			assertEqual(len facebook.getUserTimeline(u1,u1), 2); -- Only 2 posts now (the previous ones)
+		);
+		
+	-- Test scenario where a user manages likes (or removes like from) publications he has access to
+	-- Covers the respective scenario described in section 2.1 and requirement R6
+	protected testLikeAndUnlike: () ==> ()
+		testLikeAndUnlike() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
+			
+			facebook.addUsers({u1,u2,u3,u4,u5,u6,u7});
+			
+			-- set up some friendships
+			facebook.addFriendship(u1,u2);
+			facebook.addFriendship(u1,u3);
+			facebook.addFriendship(u2,u4);
+			facebook.addFriendship(u4,u5);
+			facebook.addFriendship(u5,u6);
+			
+			-- create publications
+			u1.makePublication("greetings, eager young minds", Date`makeDate(2016,12,12), <TransitiveConnection>); --ID 1
+			u1.makePublication("greetings, friends", Date`makeDate(2016,12,13), <Friends>); --ID 2
+			u1.makePublication("fear me, friends, for i am back", Date`makeDate(2017,12,17), <Public>); --ID 3
+			u2.makePublication("back, looking for new friendships", Date`makeDate(2017,01,01), <FriendsOfFriends>); --ID 4
+			u3.makePublication("what do i need friends for? popularity, of course", Date`makeDate(2018,01,13), <Friends>); --ID 5
+			
+			-- add some likes
+			facebook.likePublication(u1, 1); --Bunch of self likes
+			facebook.likePublication(u1, 2);
+			facebook.likePublication(u2, 3);
+			facebook.likePublication(u3, 1);
+			facebook.likePublication(u6, 1); --Possible through transitive connection
+			
+			assertEqual(u1.getPublicationById(1).getLikes(), {u1,u3,u6});
+			assertEqual(u1.getPublicationById(2).getLikes(), {u1});
+			assertEqual(u1.getPublicationById(3).getLikes(), {u2});
+			
+			-- remove some likes
+			facebook.unlikePublication(u1, 1);
+			facebook.unlikePublication(u2, 3);
+			
+			assertEqual(u1.getPublicationById(1).getLikes(), {u3,u6});
+			assertEqual(card u1.getPublicationById(3).getLikes(), 0);
+		);
+		
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning Publication Tests\n");
-								
-					
-				IO`println("\nPublication Tests ran successfully\n");
+				IO`println("Running Publication Tests\n");
+				testPublicationSearch();
+				testTimelineUpdate();
+				testLikeAndUnlike();
+				IO`println("Publication Tests ran successfully\n");
 			);
 
 end TestPublication

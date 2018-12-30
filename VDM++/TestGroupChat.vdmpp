@@ -1,17 +1,114 @@
 class TestGroupChat is subclass of Test
 
 instance variables
-	
-operations
-	protected Setup: () ==> ()
-			Setup() == is not yet specified;
+operations			
+	-- Test scenario where users create chats with other users and communicate in it
+	-- Covers the respective scenario described in section 2.1 and requirement R8
+	protected testGroupChatCommunication: () ==> ()
+		testGroupChatCommunication() == (
+			facebook := Facebook`clearInstance();
+			setupUsers();
 			
+			facebook.addUsers({u1,u2,u3,u4});
+			-- setup some friendships
+			facebook.addFriendship(u1,u2);
+			facebook.addFriendship(u1,u3);
+			facebook.addFriendship(u1,u4);
+			facebook.addFriendship(u3,u4);
+			
+			u1.createGroupChat("i hate eclipse", {u2,u3});
+			u4.createGroupChat("by myself", {u3});
+			assertEqual(u1.getChatByName("i hate eclipse").getMembers(), {u1,u2,u3}); --3 starting members
+			assertTrue(u1.getChatByName("i hate eclipse") = u2.getChatByName("i hate eclipse") and u2.getChatByName("i hate eclipse") = u3.getChatByName("i hate eclipse")); --same chat for every member
+			
+			u1.sendChatMessage("i hate eclipse", "hey guys, we have to do MFES", Date`makeDate(2018,12,22));
+			u3.sendChatMessage("i hate eclipse", "well user4 is missing, so let me add him", Date`makeDate(2018,12,22));
+			assertEqual(len u1.getChatByName("i hate eclipse").getMessagesBetween(nil, nil), 2); --2 messages in chat
+			
+			u3.addFriendToChat(u4, "i hate eclipse");
+			assertTrue(u4 in set u3.getChatByName("i hate eclipse").getMembers());
+			assertEqual(card u3.getChatByName("i hate eclipse").getMembers(), 4); --4 members now
+			
+			u3.sendChatMessage("i hate eclipse", "hey user4, MFES man, gotta do it", Date`makeDate(2018,12,23));
+			u4.sendChatMessage("i hate eclipse", "nope, GL", Date`makeDate(2018,12,25));
+			u2.sendChatMessage("i hate eclipse", "fine, then i won't do anything too", Date`makeDate(2018,12,26));
+			u2.leaveGroupChat("i hate eclipse");
+			
+			assertEqual(len u1.getChatByName("i hate eclipse").getMessagesBetween(nil, nil), 5); --5 messages in chat now
+			assertEqual(card u1.getChatByName("i hate eclipse").getMembers(), 3);
+			assertTrue(u2 not in set u1.getChatByName("i hate eclipse").getMembers()); --u2 left the chat
+			assertEqual(card u2.getChats(), 0); --u2 is no longer in any group chat
+		);
+
+	-- Test scenario where chat messages are looked up by their content or filtered by their date
+	-- Covers requirement R9
+	protected testGroupChatSearchAndFilter: () ==> ()
+		testGroupChatSearchAndFilter() == (
+			dcl chat: GroupChat;
+			dcl expected: seq of ChatMessage;
+			dcl actual: seq of ChatMessage;
+			facebook := Facebook`clearInstance();
+			setupUsers();
+			
+			facebook.addUsers({u1,u2,u3,u4});
+			-- setup some friendships
+			facebook.addFriendship(u1,u2);
+			facebook.addFriendship(u1,u3);
+			facebook.addFriendship(u1,u4);
+			facebook.addFriendship(u3,u4);
+			
+			u1.createGroupChat("superior users", {u2,u3});
+			chat := u1.getChatByName("superior users");
+			
+			-- Small conversation
+			u1.sendChatMessage("superior users", "hey guys, let's play something", Date`makeDate(2018,12,22)); --ID 1
+			u3.sendChatMessage("superior users", "user4 loves to game, let me add him", Date`makeDate(2018,12,22)); --ID 2
+			u3.addFriendToChat(u4, "superior users");
+			u3.sendChatMessage("superior users", "hey 4 let's game", Date`makeDate(2018,12,22)); --ID 3
+			u4.sendChatMessage("superior users", "meh i don't feel like gaming rn", Date`makeDate(2018,12,23)); --ID 4
+			u1.sendChatMessage("superior users", "stop being so negative, you love games no matter what", Date`makeDate(2018,12,24)); --ID 5
+			u4.sendChatMessage("superior users", "well sure but i have to study", Date`makeDate(2018,12,25)); --ID 6
+			u3.sendChatMessage("superior users", "pff come on you always get straight As", Date`makeDate(2018,12,26)); --ID 7
+			u2.sendChatMessage("superior users", "yeah, besides exams are like a month away, studying now makes no sense!", Date`makeDate(2018,12,28)); --ID 8
+			u4.sendChatMessage("superior users", "look guys i just don't want to game", Date`makeDate(2019,1,1)); --ID 9
+			u2.sendChatMessage("superior users", "ok, 1 and 3 let's game ourselves then", Date`makeDate(2019,2,15)); --ID 10
+			u1.sendChatMessage("superior users", "sure thing, just give me a second", Date`makeDate(2019,5,5));-- ID 11
+			u3.sendChatMessage("superior users", "absolutely, brb too", Date`makeDate(2019,6,1)); --ID 12
+			u4.sendChatMessage("superior users", "so what did you guys end up doing for a game?", Date`makeDate(2019,6,2)); --ID 13
+			u1.sendChatMessage("superior users", "lol nothing... let's talk later, l8r bro", Date`makeDate(2019,6,3)); --ID 14
+			u1.leaveGroupChat("superior users");
+			
+			-- Filter messages through different periods
+			assertEqual(len chat.getMessagesBetween(nil, nil), 14); --providing no dates means no filtering which simply returns all chat messages
+			
+			actual := chat.getMessagesBetween(Date`makeDate(2018,12,26), nil); --filtering all messages from a certain date onwards
+			expected := [chat.getMessageById(7),chat.getMessageById(8),chat.getMessageById(9),chat.getMessageById(10),chat.getMessageById(11),chat.getMessageById(12),chat.getMessageById(13),chat.getMessageById(14)]; -- all messages since 26th December 2018
+			assertTrue(len actual = len expected and forall i in set inds actual & actual(i) = expected(i));
+			
+			actual := chat.getMessagesBetween(nil, Date`makeDate(2018,12,26)); --filtering all messages until a certain date
+			expected := [chat.getMessageById(1),chat.getMessageById(2),chat.getMessageById(3),chat.getMessageById(4),chat.getMessageById(5),chat.getMessageById(6),chat.getMessageById(7)]; -- all messages until 26th December 2018
+			assertTrue(len actual = len expected and forall i in set inds actual & actual(i) = expected(i));
+			
+			actual := chat.getMessagesBetween(Date`makeDate(2018,12,26), Date`makeDate(2019,6,1)); --filtering all messages between two well defined dates
+			expected := [chat.getMessageById(7),chat.getMessageById(8),chat.getMessageById(9),chat.getMessageById(10),chat.getMessageById(11),chat.getMessageById(12)]; -- all messages since 26th December 2018 and 1st June 2019
+			assertTrue(len actual = len expected and forall i in set inds actual & actual(i) = expected(i));
+			
+			-- Filter messages through different search patterns
+			actual := u2.searchTextInChat("superior users", "game");
+			expected := [chat.getMessageById(2),chat.getMessageById(3),chat.getMessageById(5),chat.getMessageById(9),chat.getMessageById(10),chat.getMessageById(13)];
+			assertTrue(len actual = len expected and forall i in set inds actual & actual(i) = expected(i));
+			
+			actual := u2.searchTextInChat("superior users", "let's");
+			expected := [chat.getMessageById(1),chat.getMessageById(3),chat.getMessageById(10),chat.getMessageById(14)];
+			assertTrue(len actual = len expected and forall i in set inds actual & actual(i) = expected(i));
+		);
+		
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning GroupChat Tests\n");
-								
-					
-				IO`println("\nGroupChat Tests ran successfully\n");
+				IO`println("Running GroupChat Tests\n");
+				testGroupChatCommunication();
+				testGroupChatSearchAndFilter();
+				IO`println("GroupChat Tests ran successfully\n");
 			);
 
 end TestGroupChat

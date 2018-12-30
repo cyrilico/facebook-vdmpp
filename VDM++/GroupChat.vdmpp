@@ -1,10 +1,12 @@
+-- Class representing a private group conversation between users
 class GroupChat
 types
+	-- String type for chat name
   public String = seq1 of char;
   public Date = Date`Date;
 values
--- TODO Define values here
 instance variables
+	-- Chat name to uniquely identify conversations user is in (check User class)
   protected name: String;
   protected members: set of User;
   protected messages: seq of ChatMessage;
@@ -13,6 +15,7 @@ instance variables
   inv forall i1, i2 in set inds messages & i1 < i2 => messages(i1).getTimestamp() <= messages(i2).getTimestamp();
   
 operations
+	-- Constructor
   public GroupChat: String * set1 of User ==> GroupChat
       GroupChat(GroupChatName, GroupChatStartingMembers) == (
         name := GroupChatName;
@@ -23,27 +26,35 @@ operations
       pre GroupChatName <> ""
       post name = GroupChatName and members = GroupChatStartingMembers and messages = [];
 	
+	-- Getter for chat name
 	pure public getName: () ==> String
 			getName() == return name
 			post RESULT = name;
 	
+	-- Getter for chat members
 	pure public getMembers: () ==> set of User
 			getMembers() == return members;
-			
+	
+	-- Add a user to the group chat
+	-- IN user - user to be added
   public addMember: User ==> ()
       addMember(user) == (
         members := members union {user}
       )
       pre user not in set members
       post members = members~ union {user};
-
+	
+	-- Remove a user that is currently in the chat (guaranteed by precondition)
+	-- IN user - user to be removed
   public removeMember: User ==> ()
       removeMember(user) == (
         members := members \ {user}
       )
       pre user in set members
       post members = members~ \ {user};
-
+	
+	-- Send a message to the chat. Precondition guarantees message's author is a chat member at that time
+	-- IN message - new message
   public sendMessage: ChatMessage ==> ()
       sendMessage(message) == (
         messages := messages ^ [message];
@@ -52,6 +63,9 @@ operations
       post messages = messages~ ^ [message];
   
   -- Get chat messages. Optionally, filter by start and/or end date
+  -- IN [startdate] - Optional filter start date, defaults to 1-1-1 if not given
+  -- IN [enddate] - Optional filter end date, defaults to 31-12-9999 if not given
+  -- OUT chat messages in given period
   pure public getMessagesBetween: [Date] * [Date] ==> seq of ChatMessage
       getMessagesBetween(startDate, endDate) == (
       	return [messages(i) | 
@@ -63,15 +77,24 @@ operations
       pre startDate <> nil and endDate <> nil => startDate <= endDate and startDate >= Date`minimumDate and endDate <= Date`maximumDate;
 	
 	-- Get chat messages that contain a search query text
+	-- IN searchText - search query
+	-- OUT chat messages that contain search text
 	pure public getMessagesWithText: String ==> seq of ChatMessage
 			getMessagesWithText(searchText) == (
 				return [messages(i) | 
       						i in set inds messages & 
       						messages(i).contentContains(searchText)
       				 ]    
+			);
+	
+	-- Retrieve a specific chat message by its unique ID
+	-- IN messageId - unique identifier (guaranteed valid by precondition)
+	-- OUT respective chat message
+	pure public getMessageById: nat1 ==> ChatMessage
+			getMessageById(messageId) == (
+				return iota message in set elems messages & message.getId() = messageId;
 			)
+			pre exists1 index in set inds messages & messages(index).getId() = messageId;
 functions
--- TODO Define functiones here
 traces
--- TODO Define Combinatorial Test Traces here
 end GroupChat

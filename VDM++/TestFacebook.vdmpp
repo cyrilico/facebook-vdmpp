@@ -1,59 +1,122 @@
 class TestFacebook is subclass of Test
 
-instance variables
-	face : Facebook := Facebook`getInstance();
-	user1 : User := new User("user1");
-	user2 : User := new User("user2");
-	user3 : User := new User("user3");
-	user4 : User := new User("user4");
-	
-operations
-	protected Setup: () ==> ()
-			Setup() == is not yet specified;
-			
-	protected testAddFriendships: () ==> ()
-		testAddFriendships() == (
-		
-				face.getInstance().addUsers({user1, user2, user3, user4});
+instance variables	
+operations		
+		-- Test scenario where users are added into the platform (registration)
+		-- Covers the respective scenario described in section 2.1 and requirement R1
+		protected testRegistration: () ==> ()
+			testRegistration() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
 				
-				face.getInstance().addFriendship(user1, user2);
-				face.getInstance().addFriendship(user1, user3);
-				face.getInstance().addFriendship(user1, user4);
+				-- add 1 user
+				facebook.addUser(u1);
+				facebook.addUser(u2);
+				assertTrue(card facebook.getUsers() = 2);
+				
+				-- add multiple users
+				facebook.addUsers({u3,u4,u5});
+				assertTrue(card facebook.getUsers() = 5);
+				
+				assertTrue({u1,u2,u3,u4,u5} = facebook.getUsers());
+				
+				-- check existing and non existing users
+				assertEqual(facebook.getUserByName("user1"), u1);
+				assertEqual(facebook.getUserByName("user6"), nil);
+			);
 		
-				assertEqual(card user1.getFriends(), 3);			
-				assertEqual(card user2.getFriends(), 1);	
-				assertEqual(card user3.getFriends(), 1);	
-				assertEqual(card user4.getFriends(), 1);		
+		-- Test scenario where users are looked up by their names
+		-- Covers requirement R2
+		protected testUserSearch: () ==> ()
+			testUserSearch() == (
+				-- create some users with more sophisticated names
+				dcl ua: User := new User("joseph");
+				dcl ub: User := new User("john");
+				dcl uc: User := new User("amanda");
+				dcl ud: User := new User("anna");
+				dcl ue: User := new User("username6");
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+				-- add some users to the platform
+				facebook.addUsers({u1,u2,u3,ua,ub,uc,ud,ue});
+				
+				assertTrue(card facebook.searchUser("user") = 4);
+				assertEqual(facebook.searchUser("user"), {u1,u2,u3,ue});
+				
+				assertTrue(card facebook.searchUser("jo") = 2);
+				assertEqual(facebook.searchUser("jo"), {ua,ub});
+				
+				assertTrue(ud in set facebook.searchUser("ann"));
+				assertTrue(uc not in set facebook.searchUser("ann"));
+			);
+		
+		-- Test scenario where a user checks his main feed to assess the most relevant content for him
+		-- Covers the respective scenario described in section 2.1 and requirement R12
+		protected testFeed: () ==> ()
+			testFeed() == (
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+				facebook.addUsers({u1,u2,u3,u4});
+				facebook.addFriendship(u1,u2);
+				facebook.addFriendship(u2,u3);
+				u1.makePublication("boas tudo bem", 20181221, <Public>);
+				u1.makePublication("not for you", 20181221, <Friends>);
+				u2.makePublication("boazz", 20181201, <Friends>);
+				
+				assertTrue(len facebook.getUserFeed(u1) = 1);
+				assertTrue(len facebook.getUserFeed(u2) = 2);
+				assertTrue(len facebook.getUserFeed(u3) = 1);
+				assertTrue(len facebook.getUserFeed(u4) = 0);
+			);
+		
+		-- Test scenario where users receive potential friend suggestions
+		-- Covers requirement R10
+		protected testFriendSuggestions: () ==> ()
+			testFriendSuggestions() == (
+				dcl userSeq: seq of User;
+				facebook := Facebook`clearInstance();
+				setupUsers();
+				
+				facebook.addUsers({u1, u2, u3, u4, u5, u6, u7, u8, u9});
+				
+				-- Testing general case
+				-- u1 has 3 friends: u2, u3, and u4
+				facebook.addFriendship(u1, u2);
+				facebook.addFriendship(u1, u3);
+				facebook.addFriendship(u1, u4);
+				
+				-- u5 has 2 friends: u3, and u4
+				facebook.addFriendship(u5, u3);
+				facebook.addFriendship(u5, u4);
+				
+				facebook.addFriendship(u6, u3);
+				facebook.addFriendship(u7, u2);
+				facebook.addFriendship(u7, u8);
+				
+				userSeq := facebook.getFriendSuggestions(u1);
+				assertEqual(3, len userSeq);
+				assertEqual([u5,u6,u7], userSeq);
+				
+				userSeq := facebook.getFriendSuggestions(u5);
+				assertEqual(2, len userSeq);
+				assertEqual([u1, u6], userSeq);
+				
+				-- Testing case where target user has no friends
+				userSeq := facebook.getFriendSuggestions(u9);
+				assertEqual(0, len userSeq);
 		);
 		
-	protected testCommonFriends: () ==> ()
-		testCommonFriends() == (
-		
-				face.getInstance().addUsers({user1, user2, user3, user4});
-				
-				-- user1 has 3 friends: user2, user3, and user4
-				face.getInstance().addFriendship(user1, user2);
-				face.getInstance().addFriendship(user1, user3);
-				face.getInstance().addFriendship(user1, user4);
-				
-				-- user2 has 2 friends: user1, and user4
-				face.getInstance().addFriendship(user2, user4);
-				
-				assertEqual(face.getCommonFriends(user1, user2), {user4});
-				assertEqual(card face.getCommonFriends(user1, user2), 1);				
-		);
 			
 	public Run: () ==> ()
 			Run() == (
-				IO`println("\nRunning Facebook Tests\n");
-				
-				testAddFriendships();
-				face := Facebook`clearInstance();
-				
-				testCommonFriends();
-				face := Facebook`clearInstance();
-				
-				IO`println("\nFacebook Tests ran successfully\n");
+				IO`println("Running Facebook Tests\n");
+				testRegistration();
+				testUserSearch();
+				testFeed();
+				testFriendSuggestions();
+				IO`println("Facebook Tests ran successfully\n");
 			);
 
 end TestFacebook
