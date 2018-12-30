@@ -3,16 +3,10 @@ types
 	public String = seq1 of char;
 	-- Class private type to use in publication sorting for main feed generation
 	protected PublicationRank :: publication: Publication
-															 score: nat
-		ord mk_PublicationRank(p1,s1) < mk_PublicationRank(p2,s2) ==
-  	s1 < s2 or
-  	s1 = s2 and p1.getTimestamp() < p2.getTimestamp();
+															 score: nat;
   	
 	protected UserRank :: user: User
-															 score: nat
-		ord mk_UserRank(u1,s1) < mk_UserRank(u2,s2) ==
-  	s1 < s2 or
-  	s1 = s2 and u1.getNameLength() < u2.getNameLength();
+															 score: nat;
   	
 values
 instance variables
@@ -110,23 +104,29 @@ operations
   	pre user1 in set users and user2 in set users
   	post user1 not in set user2.friends and user2 not in set user1.friends;
   
+  -- Retrieve all publications user can see. For internal usage, since post conditions do not allow set comprehensions for code generation
+  -- IN searcher - user to assume perspective from
+  -- OUT publications he has access to
+  pure protected getAllPublications: User ==> set of Publication
+  		getAllPublications(searcher) == return dunion {elems getUserTimeline(searcher,member) | member in set users};
+  
   -- User likes a publication
   -- IN user - user that likes publication
   -- IN publicationId - unique publication identifier
   public likePublication: User * nat1 ==> ()
   		likePublication(user, publicationId) == (
-  			let publication = iota publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId in publication.like(user);
+  			let publication = iota publication in set getAllPublications(user) & publication.getId() = publicationId in publication.like(user);
   		)
-  		pre user in set users and exists1 publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId;
+  		pre user in set users and exists1 publication in set getAllPublications(user) & publication.getId() = publicationId;
   		
  	-- User unlikes a publication
   -- IN user - user that currently likes publication
   -- IN publicationId - unique publication identifier
   public unlikePublication: User * nat1 ==> ()
   		unlikePublication(user, publicationId) == (
-  			let publication = iota publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId in publication.removeLike(user);
+  			let publication = iota publication in set getAllPublications(user) & publication.getId() = publicationId in publication.removeLike(user);
   		)
-  		pre user in set users and exists1 publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId and user in set publication.getLikes();
+  		pre user in set users and exists1 publication in set getAllPublications(user) & publication.getId() = publicationId and user in set publication.getLikes();
   
   -- Look up users whose name matches a search pattern
   -- IN searchText - string to look up
@@ -218,7 +218,9 @@ operations
 				dcl sorted_list: seq of PublicationRank := publications;
 				for i = len publications to 1 by -1 do 
 					for j = 1 to i-1 do 
-						if sorted_list(j+1) < sorted_list(j) then 
+						if sorted_list(j).score > sorted_list(j+1).score 
+ 							 or sorted_list(j).score = sorted_list(j+1).score
+ 							 and sorted_list(j).publication.getTimestamp() > sorted_list(j+1).publication.getTimestamp() then 
 							(dcl temp: PublicationRank := sorted_list(j); 
 							sorted_list(j) := sorted_list(j+1); 
 							sorted_list(j+1) := temp
@@ -232,7 +234,9 @@ operations
 			dcl sorted_list: seq of UserRank := suggestions;
 			for i = len suggestions to 1 by -1 do 
 				for j = 1 to i-1 do 
-					if sorted_list(j+1) < sorted_list(j+1) then 
+					if sorted_list(j).score < sorted_list(j+1).score 
+ 						 or sorted_list(j).score = sorted_list(j+1).score
+ 						 and sorted_list(j).user.getNameLength() > sorted_list(j+1).user.getNameLength() then 
 						(dcl temp: UserRank := sorted_list(j); 
 						sorted_list(j) := sorted_list(j+1); 
 						sorted_list(j+1) := temp
