@@ -58,7 +58,8 @@ operations
   -- Specific group chat getter
   -- IN chat name
   pure public getChatByName: String ==> GroupChat
-  		getChatByName(chatName) == return chats(chatName);
+  		getChatByName(chatName) == return chats(chatName)
+  		pre chatName in set dom chats;
   
   -- Publications getter from another user's perspective (i.e. retrieves publications that given user has access to)
   -- IN searcher - user to assume perspective from

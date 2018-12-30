@@ -60,7 +60,7 @@ operations
     addUser(user) == (
       users := users union {user}
     )
-    pre user not in set users
+    pre not exists member in set users & member.getName() = user.getName()
     post users = users~ union {user};
   
   -- Add a set of user to the platform simultaneously
