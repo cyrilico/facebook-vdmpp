@@ -83,7 +83,7 @@ operations
   pure public getFriendsOfFriends: () ==> set of User
   		getFriendsOfFriends() == (
   			-- Union of friends set with every other friends set from user's friends. Then, exclude itself
-  			return {people | people in set friends union dunion {friend.friends | friend in set friends} \ {user} } 
+  			return {people | people in set (friends union dunion {friend.friends | friend in set friends} \ {user}) } 
   		)
   		post friends subset RESULT and card RESULT >= card friends;
   

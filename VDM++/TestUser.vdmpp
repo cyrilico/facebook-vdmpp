@@ -4,15 +4,43 @@ instance variables
 	
 operations
 		-- Test scenario where users add each other to their friends list
-		-- Covers the respective scenario described in section 2.1 and requirement R4
+		-- Covers the respective scenario described in section 2.1 and requirement R3
 		protected testFriendship: () ==> ()
 			testFriendship() == (
 				facebook := Facebook`clearInstance();
 				setupUsers();
+				
+				facebook.addUsers({u1,u2,u3,u4,u5,u6,u7,u8});
+				
+				-- setup friendships
+				facebook.addFriendship(u1,u2);
+				facebook.addFriendship(u1,u3);
+				facebook.addFriendship(u1,u4);
+				facebook.addFriendship(u2,u5);
+				facebook.addFriendship(u3,u6);
+				facebook.addFriendship(u3,u4);
+				facebook.addFriendship(u4,u7);
+				facebook.addFriendship(u7,u8);
+				
+				assertEqual(u1.getFriends(), {u2,u3,u4});
+				assertEqual(u2.getFriends(), {u1,u5});
+				assertEqual(u5.getFriends(), {u2}); --test friendship biconnection property
+				assertEqual(u1.getFriendsOfFriends(), {u2,u3,u4,u5,u6,u7});
+				assertEqual(u1.getFriendsTransitiveClosure(), {u2,u3,u4,u5,u6,u7,u8});
+			
+				-- remove some friendships
+				facebook.removeFriendship(u1,u2);
+				facebook.removeFriendship(u1,u4);
+				
+				assertEqual(u1.getFriends(), {u3});
+				assertTrue(u1 not in set u2.getFriends());
+				assertEqual(u2.getFriends(), {u5});
+				assertEqual(u1.getFriendsOfFriends(), {u3,u4,u6});
+				assertEqual(u1.getFriendsTransitiveClosure(), {u3,u4,u6,u7,u8});
 			);
 
 		-- Test scenario where users add other users to their blocked users list
-		-- Covers the respective scenario described in section 2.1 and requirement R5
+		-- Covers the respective scenario described in section 2.1 and requirement R4
 		protected testBlocking: () ==> ()
 			testBlocking() == (
 				facebook := Facebook`clearInstance();

@@ -4,7 +4,7 @@ instance variables
 	
 operations
 	-- Test scenario where publications are looked up by their content
-	-- Covers requirement R3
+	-- Covers requirement R5
 	protected testPublicationSearch: () ==> ()
 		testPublicationSearch() == (
 			facebook := Facebook`clearInstance();
