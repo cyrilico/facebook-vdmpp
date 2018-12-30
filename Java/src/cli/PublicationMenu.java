@@ -3,6 +3,7 @@ package cli;
 import org.overture.codegen.runtime.VDMSeq;
 import vdm.Date;
 import vdm.Publication;
+import vdm.User;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,7 @@ class PublicationMenu extends AbstractMenu {
         switch (input) {
             case "See Posts":
                 seePosts();
+                break;
             case "New Post":
                 newPost();
                 break;
@@ -66,11 +68,31 @@ class PublicationMenu extends AbstractMenu {
     }
 
     private void updatePost() {
-//        mainMenu.user.updatePublicationPermissions(publicationID, newPermissions);
+        Publication post = getPost();
+        System.out.println("Current permissions: " + post.getPermissions().toString());
+        Object perms = getPermissions();
+        mainMenu.user.updatePublicationPermissions(post.getId(), perms);
     }
 
     private void deletePost() {
     }
+
+    private Publication getPost() {
+        Publication post;
+        int i = 3;
+
+        do {
+            System.out.print("Enter post's ID: ");
+            String postID = scanner.nextLine();
+            post = mainMenu.user.getPublicationById(Integer.parseInt(postID));
+            if (post == null)
+                System.out.println("Post not found");
+            i--;
+        } while (post == null && i > 0);
+
+        return post;
+    }
+
 
     private Object getPermissions() {
         Object perms = null;
