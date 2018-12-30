@@ -85,7 +85,16 @@ operations
       						i in set inds messages & 
       						messages(i).contentContains(searchText)
       				 ]    
+			);
+	
+	-- Retrieve a specific chat message by its unique ID
+	-- IN messageId - unique identifier (guaranteed valid by precondition)
+	-- OUT respective chat message
+	pure public getMessageById: nat1 ==> ChatMessage
+			getMessageById(messageId) == (
+				return iota message in set elems messages & message.getId() = messageId;
 			)
+			pre exists1 index in set inds messages & messages(index).getId() = messageId;
 functions
 traces
 end GroupChat
