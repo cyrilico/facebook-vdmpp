@@ -3,7 +3,6 @@ package cli;
 import org.overture.codegen.runtime.VDMSeq;
 import vdm.Date;
 import vdm.Publication;
-import vdm.User;
 
 import java.util.ArrayList;
 
@@ -75,6 +74,7 @@ class PublicationMenu extends AbstractMenu {
     }
 
     private void deletePost() {
+        mainMenu.user.deletePublication(getPost().getId());
     }
 
     private Publication getPost() {
