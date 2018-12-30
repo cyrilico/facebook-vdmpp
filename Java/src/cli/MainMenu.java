@@ -2,10 +2,10 @@ package cli;
 
 import java.util.ArrayList;
 
-public class MainMenu extends AbstractMenu {
+class MainMenu extends AbstractMenu {
 
     @Override
-    void getOptions() {
+    void getOptions(boolean hasParent) {
         printDivision("Main Menu");
 
         ArrayList<String> options = new ArrayList<>();
@@ -14,23 +14,25 @@ public class MainMenu extends AbstractMenu {
         options.add("Search users by name");
         options.add("Stats");
 
-        String input = printOptions(options, false);
+        String input = printOptions(options, hasParent);
         switch (input) {
             case "Users":
 //                usersMenu(true);
-                getOptions();
+                FriendsMenu friendsMenu = new FriendsMenu();
+                friendsMenu.getOptions(true);
+                getOptions(hasParent);
                 break;
             case "Groups":
 //                groupsMenu(true);
-                getOptions();
+                getOptions(hasParent);
                 break;
             case "Search users by name":
 //                searchUsersByName(true);
-                getOptions();
+                getOptions(hasParent);
                 break;
             case "Stats":
 //                statsMenu(true);
-                getOptions();
+                getOptions(hasParent);
                 break;
 //            case BACK_INPUT:
 //                break;

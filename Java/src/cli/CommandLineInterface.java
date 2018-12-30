@@ -6,6 +6,6 @@ public class CommandLineInterface {
 
         System.out.println("Welcome to Facebook VDM++!");
 
-        mainMenu.getOptions();
+        mainMenu.getOptions(false);
     }
 }

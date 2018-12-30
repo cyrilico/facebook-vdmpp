@@ -3,29 +3,29 @@ package cli;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public abstract class AbstractMenu {
-    public static final String BACK_INPUT = "b";
-    public static final String MENU_INPUT = "m";
+abstract class AbstractMenu {
+    static final String BACK_INPUT = "b";
+    static final String MENU_INPUT = "m";
 
-    Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
 
-    abstract void getOptions();
+    abstract void getOptions(boolean hasParent);
 
-    public void printDivision(String menu) {
+    void printDivision(String menu) {
         System.out.println();
         System.out.println("-------------------------" + menu + "------------------------");
 
     }
 
-    public String printOptions(ArrayList<String> options, boolean hasParent) {
+    String printOptions(ArrayList<String> options, boolean hasParent) {
         for (int i = 0; i < options.size(); i++) {
             System.out.println((i + 1) + "- " + options.get(i));
-
         }
 
         if (hasParent) {
             System.out.println("'b' to go back or 'm' to go to the main menu.");
         }
+
         System.out.print("Select one of the options: ");
 
         boolean validInput = false;
@@ -46,7 +46,7 @@ public abstract class AbstractMenu {
         }
     }
 
-    public boolean isValidInput(ArrayList<String> options, boolean hasParent, String input) {
+    private boolean isValidInput(ArrayList<String> options, boolean hasParent, String input) {
         if (hasParent) {
             if (input.equals(BACK_INPUT) || input.equals(MENU_INPUT)) {
                 return true;
@@ -65,12 +65,8 @@ public abstract class AbstractMenu {
         }
     }
 
-    public void printInvalidInputMessage() {
+    private void printInvalidInputMessage() {
         System.out.println("Invalid input!!!");
 
-    }
-
-    public void printInvalidUsersId() {
-        System.out.println("Invalid user's id");
     }
 }
