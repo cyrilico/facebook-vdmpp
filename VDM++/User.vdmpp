@@ -186,7 +186,8 @@ operations
 	-- IN chat - group chat he was added to
 	protected addGroupChat: GroupChat ==> ()
 			addGroupChat(chat) == (
-				chat.addMember(self);
+				if self not in set chat.getMembers() then
+					chat.addMember(self);
 				chats := chats munion {chat.getName() |-> chat};
 			)
 			pre chat.getName() not in set dom chats
