@@ -21,14 +21,22 @@ class TimelineMenu extends AbstractMenu {
         String input = printAndSelectOptions(options);
         switch (input) {
             case "See My Timeline":
+                seeMyTimeline();
                 break;
             case "See Timeline from other users":
+                seeTimelineByUser();
                 break;
             case BACK_INPUT:
-                return;
             case MENU_INPUT:
-                mainMenu.getOptions();
-                break;
+                return;
         }
+
+        getOptions();
+    }
+
+    private void seeMyTimeline() {
+    }
+
+    private void seeTimelineByUser() {
     }
 }

@@ -15,17 +15,35 @@ class PublicationMenu extends AbstractMenu {
         printDivision("Posts Menu");
 
         ArrayList<String> options = new ArrayList<>();
-        options.add("See Posts");
+        options.add("New Post");
+        options.add("Update Post");
+        options.add("Delete Post");
 
         String input = printAndSelectOptions(options);
         switch (input) {
-            case "See Posts":
+            case "New Post":
+                newPost();
+                break;
+            case "Update Post":
+                updatePost();
+                break;
+            case "Delete Post":
+                deletePost();
                 break;
             case BACK_INPUT:
-                return;
             case MENU_INPUT:
-                mainMenu.getOptions();
-                break;
+                return;
         }
+
+        getOptions();
+    }
+
+    private void newPost() {
+    }
+
+    private void updatePost() {
+    }
+
+    private void deletePost() {
     }
 }
