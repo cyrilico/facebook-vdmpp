@@ -77,7 +77,42 @@ operations
 	-- Covers the respective scenario described in section 2.1 and requirement R6
 	protected testLikeAndUnlike: () ==> ()
 		testLikeAndUnlike() == (
-		return
+			facebook := Facebook`clearInstance();
+			setupUsers();
+			
+			facebook.addUsers({u1,u2,u3,u4,u5,u6,u7});
+			
+			-- set up some friendships
+			facebook.addFriendship(u1,u2);
+			facebook.addFriendship(u1,u3);
+			facebook.addFriendship(u2,u4);
+			facebook.addFriendship(u4,u5);
+			facebook.addFriendship(u5,u6);
+			
+			-- create publications
+			u1.makePublication("greetings, eager young minds", Date`makeDate(2016,12,12), <TransitiveConnection>); --ID 1
+			u1.makePublication("greetings, friends", Date`makeDate(2016,12,13), <Friends>); --ID 2
+			u1.makePublication("fear me, friends, for i am back", Date`makeDate(2017,12,17), <Public>); --ID 3
+			u2.makePublication("back, looking for new friendships", Date`makeDate(2017,01,01), <FriendsOfFriends>); --ID 4
+			u3.makePublication("what do i need friends for? popularity, of course", Date`makeDate(2018,01,13), <Friends>); --ID 5
+			
+			-- add some likes
+			facebook.likePublication(u1, 1); --Bunch of self likes
+			facebook.likePublication(u1, 2);
+			facebook.likePublication(u2, 3);
+			facebook.likePublication(u3, 1);
+			facebook.likePublication(u6, 1); --Possible through transitive connection
+			
+			assertEqual(u1.getPublicationById(1).getLikes(), {u1,u3,u6});
+			assertEqual(u1.getPublicationById(2).getLikes(), {u1});
+			assertEqual(u1.getPublicationById(3).getLikes(), {u2});
+			
+			-- remove some likes
+			facebook.unlikePublication(u1, 1);
+			facebook.unlikePublication(u2, 3);
+			
+			assertEqual(u1.getPublicationById(1).getLikes(), {u3,u6});
+			assertEqual(card u1.getPublicationById(3).getLikes(), 0);
 		);
 		
 	public Run: () ==> ()
