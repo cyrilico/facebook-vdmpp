@@ -51,7 +51,7 @@ class SearchMenu extends AbstractMenu {
 
         for (Object u1 : users) {
             User user = (User) u1;
-            System.out.println(user.getName());
+            System.out.println("Name: " + user.getName() + "| no. friends: " + user.getFriends().size());
         }
 
     }
@@ -68,7 +68,8 @@ class SearchMenu extends AbstractMenu {
 
         for (Object p1 : posts) {
             Publication post = (Publication) p1;
-            System.out.println(post.getContent());
+            System.out.println("Post " + post.getId() + "| Author: " + post.getAuthor().getName() + "| Date: " + post.getTimestamp() + "| Likes: " + post.getLikes().size());
+            System.out.println("Content " + post.getContent());
         }
     }
 

@@ -55,6 +55,7 @@ class PublicationMenu extends AbstractMenu {
             System.out.println("Date " + post.getTimestamp());
             System.out.println("Author " + post.getAuthor().getName());
             System.out.println("Likes " + post.getLikes());
+            System.out.println("Permissions: " + post.getPermissions().toString());
         }
     }
 
