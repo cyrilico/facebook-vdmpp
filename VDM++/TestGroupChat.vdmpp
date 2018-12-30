@@ -3,7 +3,7 @@ class TestGroupChat is subclass of Test
 instance variables
 operations			
 	-- Test scenario where users create chats with other users and communicate in it
-	-- Covers the respective scenario described in section 2.1 and requirement R7
+	-- Covers the respective scenario described in section 2.1 and requirement R8
 	protected testGroupChatCommunication: () ==> ()
 		testGroupChatCommunication() == (
 			facebook := Facebook`clearInstance();
@@ -40,8 +40,8 @@ operations
 			assertEqual(card u2.getChats(), 0); --u2 is no longer in any group chat
 		);
 
-	-- Test scenario where publications are looked up by their content
-	-- Covers requirement R8
+	-- Test scenario where chat messages are looked up by their content or filtered by their date
+	-- Covers requirement R9
 	protected testGroupChatSearchAndFilter: () ==> ()
 		testGroupChatSearchAndFilter() == (
 			dcl chat: GroupChat;

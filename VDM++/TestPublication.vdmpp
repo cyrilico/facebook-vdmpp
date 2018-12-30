@@ -4,7 +4,7 @@ instance variables
 	
 operations
 	-- Test scenario where publications are looked up by their content
-	-- Covers requirement R6
+	-- Covers requirement R7
 	protected testPublicationSearch: () ==> ()
 		testPublicationSearch() == (
 			facebook := Facebook`clearInstance();
@@ -73,11 +73,19 @@ operations
 			assertEqual(len facebook.getUserTimeline(u1,u1), 2); -- Only 2 posts now (the previous ones)
 		);
 		
+	-- Test scenario where a user manages likes (or removes like from) publications he has access to
+	-- Covers the respective scenario described in section 2.1 and requirement R6
+	protected testLikeAndUnlike: () ==> ()
+		testLikeAndUnlike() == (
+		return
+		);
+		
 	public Run: () ==> ()
 			Run() == (
 				IO`println("Running Publication Tests\n");
 				testPublicationSearch();
 				testTimelineUpdate();
+				testLikeAndUnlike();
 				IO`println("Publication Tests ran successfully\n");
 			);
 

@@ -110,6 +110,24 @@ operations
   	pre user1 in set users and user2 in set users
   	post user1 not in set user2.friends and user2 not in set user1.friends;
   
+  -- User likes a publication
+  -- IN user - user that likes publication
+  -- IN publicationId - unique publication identifier
+  public likePublication: User * nat1 ==> ()
+  		likePublication(user, publicationId) == (
+  			let publication = iota publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId in publication.like(user);
+  		)
+  		pre user in set users and exists1 publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId;
+  		
+ 	-- User unlikes a publication
+  -- IN user - user that currently likes publication
+  -- IN publicationId - unique publication identifier
+  public unlikePublication: User * nat1 ==> ()
+  		unlikePublication(user, publicationId) == (
+  			let publication = iota publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId in publication.removeLike(user);
+  		)
+  		pre user in set users and exists1 publication in set dunion {elems getUserTimeline(user,member) | member in set users} & publication.getId() = publicationId and user in set publication.getLikes();
+  
   -- Look up users whose name matches a search pattern
   -- IN searchText - string to look up
   -- OUT set of users whose name contains search text
@@ -136,7 +154,7 @@ operations
 	-- IN searcher - user that is looking up timeline
 	-- IN user - user whose timeline is being checked
 	-- OUT user timeline (i.e. all publications, sorted by timestamp, that searcher user has access to)
-	public getUserTimeline: User * User ==> seq of Publication
+	pure public getUserTimeline: User * User ==> seq of Publication
 			getUserTimeline(searcher, user) == return user.getPublications(searcher)
 			pre {user, searcher} subset users;
 	
