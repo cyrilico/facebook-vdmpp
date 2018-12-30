@@ -42,9 +42,33 @@ operations
 		-- Test scenario where users add other users to their blocked users list
 		-- Covers the respective scenario described in section 2.1 and requirement R4
 		protected testBlocking: () ==> ()
-			testBlocking() == (
+			testBlocking() == (				
 				facebook := Facebook`clearInstance();
 				setupUsers();
+				
+				facebook.addUsers({u1,u2,u3,u4,u5,u6,u7,u8});
+				
+				-- setup friendships
+				u1.blockUser(u2);
+				u1.blockUser(u3);
+				u1.blockUser(u4);
+				u2.blockUser(u5);
+				u3.blockUser(u6);
+				u3.blockUser(u4);
+				
+				assertEqual(u1.getBlockedUsers(), {u2,u3,u4});
+				assertEqual(u2.getBlockedUsers(), {u5});
+				assertEqual(u5.getBlockedUsers(), {}); --blocking is not necessarily bidirectional, unlike friendship
+				assertEqual(card u3.getBlockedUsers(), 2);
+			
+				-- remove some friendships
+				u1.unblockUser(u2);
+				u1.unblockUser(u4);
+				u3.unblockUser(u4);
+				
+				assertEqual(card u1.getBlockedUsers(), 1);
+				assertTrue(u2 not in set u1.getBlockedUsers());
+				assertTrue(u4 not in set u1.getBlockedUsers());
 			);
 			
 		-- Test scenario where a user checks other users' timeline
