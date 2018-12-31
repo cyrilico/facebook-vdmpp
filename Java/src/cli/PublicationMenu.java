@@ -73,7 +73,7 @@ class PublicationMenu extends AbstractMenu {
         Object perms = null;
 
         do {
-            System.out.println("Enter permission(public, friends, friendsOfFriends): ");
+            System.out.println("Enter permission(public, friends, friendsOfFriends, transitiveConnection): ");
             String permissions = scanner.nextLine();
 
             switch (permissions) {
@@ -85,6 +85,9 @@ class PublicationMenu extends AbstractMenu {
                     break;
                 case "friendsOfFriends":
                     perms = vdm.quotes.FriendsOfFriendsQuote.getInstance();
+                    break;
+                case "transitiveConnection":
+                    perms = vdm.quotes.TransitiveConnectionQuote.getInstance();
                     break;
             }
 
