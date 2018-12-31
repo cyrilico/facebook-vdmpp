@@ -1,4 +1,4 @@
-class TestFacebook is subclass of Test
+class TestFacebook is subclass of MyTest
 
 instance variables	
 operations		

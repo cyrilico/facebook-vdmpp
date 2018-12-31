@@ -1,4 +1,4 @@
-class TestPublication is subclass of Test
+class TestPublication is subclass of MyTest
 
 instance variables
 	

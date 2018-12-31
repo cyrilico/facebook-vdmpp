@@ -1,4 +1,4 @@
-class TestUser is subclass of Test
+class TestUser is subclass of MyTest
 
 instance variables
 	

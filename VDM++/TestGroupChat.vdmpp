@@ -1,4 +1,4 @@
-class TestGroupChat is subclass of Test
+class TestGroupChat is subclass of MyTest
 
 instance variables
 operations			

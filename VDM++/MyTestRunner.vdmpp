@@ -1,0 +1,14 @@
+class MyTestRunner
+
+operations
+	public static main: () ==> ()
+		main() == (
+			IO`println("Running tests\n");
+	    new TestGroupChat().Run();
+	    new TestPublication().Run();
+	    new TestUser().Run();
+	    new TestFacebook().Run();
+	    IO`println("Tests ran successfully\n");
+		);
+	
+end MyTestRunner
