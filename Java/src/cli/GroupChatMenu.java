@@ -1,6 +1,8 @@
 package cli;
 
+import org.overture.codegen.runtime.VDMSeq;
 import org.overture.codegen.runtime.VDMSet;
+import vdm.ChatMessage;
 import vdm.GroupChat;
 import vdm.User;
 import vdm.Date;
@@ -102,6 +104,16 @@ class GroupChatMenu extends AbstractMenu {
     private void seeAllMessages() {
         GroupChat chat = selectChat();
 
+        // The VDM methods works without paremeters,
+        // but Java doesn't allow dynamic overloading
+        VDMSeq messages = chat.getMessagesBetween(Date.minimumDate, Date.maximumDate);
+
+        System.out.println("\nAll messages from chat '" + chat.getName()+ "': \n");
+
+        for (Object obj : messages) {
+            ChatMessage message = (ChatMessage) obj;
+            System.out.println("    " + message.getAuthor().getName() + "[" + message.getTimestamp() + "] - " + message.getContent());
+        }
     }
 
     private void searchMessagesByText() {
