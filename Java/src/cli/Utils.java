@@ -26,7 +26,7 @@ public class Utils {
         return user;
     }
 
-    static Number getDate(Scanner scanner, MainMenu mainMenu) {
+    static Number getDate(Scanner scanner) {
         Number year, month, day;
 
         do {

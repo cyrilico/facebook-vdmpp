@@ -70,7 +70,7 @@ class GroupChatMenu extends AbstractMenu {
         System.out.println("What friends would you like to add to this chat?");
 
         while (initialUsers.size() < MAX_USERS) {
-            User user = getUser();
+            User user = Utils.getUser(scanner, mainMenu);
 
             if (user == null)
                 break;
@@ -100,7 +100,7 @@ class GroupChatMenu extends AbstractMenu {
 
     private void addFriend() {
         String chatName = selectChat().getName();
-        User friend = getUser();
+        User friend = Utils.getUser(scanner, mainMenu);
 
         System.out.println("\nWhat friend would you like to add to the chat?");
         mainMenu.user.addFriendToChat(friend, chatName);
@@ -145,10 +145,10 @@ class GroupChatMenu extends AbstractMenu {
         GroupChat chat = selectChat();
 
         System.out.println("\nSelecting a beginning date...");
-        Number beginDate = Utils.getDate(scanner, mainMenu);
+        Number beginDate = Utils.getDate(scanner);
 
         System.out.println("\nSelecting an ending date...");
-        Number endDate = Utils.getDate(scanner, mainMenu);
+        Number endDate = Utils.getDate(scanner);
 
         VDMSeq messages = chat.getMessagesBetween(beginDate, endDate);
 
@@ -233,27 +233,6 @@ class GroupChatMenu extends AbstractMenu {
         }
 
         return true;
-    }
-
-    //TODO: Extract this method
-    private User getUser() {
-        User user;
-        int i = 3;
-
-        do {
-            System.out.print("Enter a username (leave empty to stop) : ");
-            String username = scanner.nextLine();
-
-            if (username.isEmpty())
-                return null;
-
-            user = mainMenu.facebook.getUserByName(username);
-            if (user == null)
-                System.out.println("User not found");
-            i--;
-        } while (user == null && i > 0);
-
-        return user;
     }
 
     private String readChatContent() {

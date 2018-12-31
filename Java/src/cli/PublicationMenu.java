@@ -1,7 +1,6 @@
 package cli;
 
 import org.overture.codegen.runtime.VDMSeq;
-import vdm.Date;
 import vdm.Publication;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ class PublicationMenu extends AbstractMenu {
 
     private void newPost() {
         String content = getContent();
-        Number date = getDate();
+        Number date = Utils.getDate(scanner);
         Object perms = getPermissions();
 
         mainMenu.user.makePublication(content, date, perms);
@@ -116,18 +115,4 @@ class PublicationMenu extends AbstractMenu {
         return scanner.nextLine();
     }
 
-    private Number getDate() {
-        Number year, month, day;
-
-        do {
-            System.out.print("Enter year: ");
-            year = Integer.parseInt(scanner.nextLine());
-            System.out.print("Enter month: ");
-            month = Integer.parseInt(scanner.nextLine());
-            System.out.print("Enter day: ");
-            day = Integer.parseInt(scanner.nextLine());
-        } while (!Date.isValidDate(year, month, day));
-
-        return Date.makeDate(year, month, day);
-    }
 }
