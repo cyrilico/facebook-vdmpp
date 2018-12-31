@@ -13,6 +13,7 @@ class AuthMenu extends AbstractMenu {
         super(hasParent);
         this.facebook = facebook;
         this.auth = new Auth(facebook);
+        new PopulateDatabase(facebook).addDatabase();
     }
 
     @Override
