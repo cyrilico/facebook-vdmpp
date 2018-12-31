@@ -128,6 +128,11 @@ class GroupChatMenu extends AbstractMenu {
         String content = readChatContent();
         VDMSeq messages = chat.getMessagesWithText(content);
 
+        if(messages.isEmpty()) {
+            System.out.println("No messages found!");
+            return;
+        }
+
         System.out.println("\nMessages from chat '" + chat.getName()+ "' with the content '" + content + "': \n");
 
         for (Object obj : messages) {
@@ -137,6 +142,27 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private void searchMessagesBetweenDates() {
+        GroupChat chat = selectChat();
+
+        System.out.println("\nSelecting a beginning date...");
+        Number beginDate = Utils.getDate(scanner, mainMenu);
+
+        System.out.println("\nSelecting an ending date...");
+        Number endDate = Utils.getDate(scanner, mainMenu);
+
+        VDMSeq messages = chat.getMessagesBetween(beginDate, endDate);
+
+        if(messages.isEmpty()) {
+            System.out.println("No messages found!");
+            return;
+        }
+
+        System.out.println("\nMessages from chat '" + chat.getName()+ "': \n");
+
+        for (Object obj : messages) {
+            ChatMessage message = (ChatMessage) obj;
+            System.out.println("    " + message.getAuthor().getName() + "[" + message.getTimestamp() + "] - " + message.getContent());
+        }
     }
 
     private GroupChat selectChat() {
