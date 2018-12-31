@@ -59,32 +59,15 @@ class PublicationMenu extends AbstractMenu {
     }
 
     private void updatePost() {
-        Publication post = getPost();
+        Publication post = Utils.getPost(scanner, mainMenu);
         System.out.println("Current permissions: " + post.getPermissions().toString());
         Object perms = getPermissions();
         mainMenu.user.updatePublicationPermissions(post.getId(), perms);
     }
 
     private void deletePost() {
-        mainMenu.user.deletePublication(getPost().getId());
+        mainMenu.user.deletePublication(Utils.getPost(scanner, mainMenu).getId());
     }
-
-    private Publication getPost() {
-        Publication post;
-        int i = 3;
-
-        do {
-            System.out.print("Enter post's ID: ");
-            String postID = scanner.nextLine();
-            post = mainMenu.user.getPublicationById(Integer.parseInt(postID));
-            if (post == null)
-                System.out.println("Post not found");
-            i--;
-        } while (post == null && i > 0);
-
-        return post;
-    }
-
 
     private Object getPermissions() {
         Object perms = null;

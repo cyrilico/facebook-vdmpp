@@ -41,6 +41,22 @@ public class Utils {
         return Date.makeDate(year, month, day);
     }
 
+    static Publication getPost(Scanner scanner, MainMenu mainMenu) {
+        Publication post;
+        int i = 3;
+
+        do {
+            System.out.print("Enter post's ID: ");
+            String postID = scanner.nextLine();
+            post = mainMenu.user.getPublicationById(Integer.parseInt(postID));
+            if (post == null)
+                System.out.println("Post not found");
+            i--;
+        } while (post == null && i > 0);
+
+        return post;
+    }
+
     private static void printUser(User u1) {
         System.out.println("Name: " + u1.getName() + "| no. friends: " + u1.getFriends().size());
     }
