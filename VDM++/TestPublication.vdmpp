@@ -113,6 +113,9 @@ operations
 			
 			assertEqual(u1.getPublicationById(1).getLikes(), {u3,u6});
 			assertEqual(card u1.getPublicationById(3).getLikes(), 0);
+			
+			-- failing code (user tries to like a publication he does not have access to)
+			--facebook.likePublication(u6, 2);
 		);
 		
 	public Run: () ==> ()

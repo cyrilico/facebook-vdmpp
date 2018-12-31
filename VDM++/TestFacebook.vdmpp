@@ -23,6 +23,9 @@ operations
 				-- check existing and non existing users
 				assertEqual(facebook.getUserByName("user1"), u1);
 				assertEqual(facebook.getUserByName("user6"), nil);
+				
+				-- failing code (trying to register a new user with a name that's already taken)
+				--facebook.addUser(new User("user1"));
 			);
 		
 		-- Test scenario where users are looked up by their names

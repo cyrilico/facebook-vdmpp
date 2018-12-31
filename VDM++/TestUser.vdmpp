@@ -37,6 +37,9 @@ operations
 				assertEqual(u2.getFriends(), {u5});
 				assertEqual(u1.getFriendsOfFriends(), {u3,u4,u6});
 				assertEqual(u1.getFriendsTransitiveClosure(), {u3,u4,u6,u7,u8});
+				
+				-- failing code (friendship between a user in the platform and a user not in the platform)
+				--facebook.addFriendship(u1,u9);
 			);
 
 		-- Test scenario where users add other users to their blocked users list
@@ -69,6 +72,10 @@ operations
 				assertEqual(card u1.getBlockedUsers(), 1);
 				assertTrue(u2 not in set u1.getBlockedUsers());
 				assertTrue(u4 not in set u1.getBlockedUsers());
+				
+				-- failing code (blocking a user that is currently a friend)
+				--facebook.addFriendship(u1,u2);
+				--u1.blockUser(u2);
 			);
 			
 		-- Test scenario where a user checks other users' timeline
