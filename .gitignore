@@ -1,2 +1,5 @@
 generated/
 .project
+Java/.idea
+Java/out
+Java/Java.iml
