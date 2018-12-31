@@ -88,7 +88,7 @@ class GroupChatMenu extends AbstractMenu {
         if(chatName.isEmpty())
             return;
 
-        String content = readChatMessage();
+        String content = readChatContent();
 
         LocalDateTime now = LocalDateTime.now();
         Number date = Date.makeDate(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
@@ -99,6 +99,13 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private void addFriend() {
+        String chatName = selectChat().getName();
+        User friend = getUser();
+
+        System.out.println("\nWhat friend would you like to add to the chat?");
+        mainMenu.user.addFriendToChat(friend, chatName);
+
+        System.out.println("\nUser '" + friend.getName() + "' added to " + chatName + ".");
     }
 
     private void seeAllMessages() {
@@ -117,6 +124,16 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private void searchMessagesByText() {
+        GroupChat chat = selectChat();
+        String content = readChatContent();
+        VDMSeq messages = chat.getMessagesWithText(content);
+
+        System.out.println("\nMessages from chat '" + chat.getName()+ "' with the content '" + content + "': \n");
+
+        for (Object obj : messages) {
+            ChatMessage message = (ChatMessage) obj;
+            System.out.println("    " + message.getAuthor().getName() + "[" + message.getTimestamp() + "] - " + message.getContent());
+        }
     }
 
     private void searchMessagesBetweenDates() {
@@ -216,8 +233,15 @@ class GroupChatMenu extends AbstractMenu {
         return user;
     }
 
-    private String readChatMessage() {
-        System.out.print("Enter message content: ");
-        return scanner.nextLine();
+    private String readChatContent() {
+        String content;
+
+        do {
+            System.out.print("Enter message content: ");
+            content = scanner.nextLine();
+        } while (content.isEmpty());
+
+        return content;
     }
+
 }
