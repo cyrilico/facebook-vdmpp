@@ -2,6 +2,7 @@ package cli;
 
 import org.overture.codegen.runtime.VDMSet;
 import vdm.GroupChat;
+import vdm.User;
 
 import java.util.ArrayList;
 
@@ -54,6 +55,27 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private void createChat() {
+
+        String chatName = readChatName();
+
+        VDMSet initialUsers = new VDMSet();
+
+        int MAX_USERS = 10;
+
+        System.out.println("What friends would you like to add to this chat?");
+
+        while(initialUsers.size() < MAX_USERS) {
+
+            User user = getUser();
+
+            if(user == null)
+                break;
+
+            initialUsers.add(user);
+        }
+
+        mainMenu.user.createGroupChat(chatName, initialUsers);
+        System.out.println("Group chat named '" + chatName + "' with " + initialUsers.size() + " users was created.");
     }
 
     private void sendMessage() {
@@ -79,20 +101,55 @@ class GroupChatMenu extends AbstractMenu {
 
         System.out.println("Which chat would you like to choose ?");
 
-        GroupChat chat;
+        GroupChat chat = null;
         int i = 3;
         do {
             System.out.print("Choose a chat: ");
             String option = scanner.nextLine();
 
-            chat = mainMenu.user.getChatByName(option);
+            try {
+                chat = mainMenu.user.getChatByName(option);
+            }
+            catch (IllegalArgumentException e) {
+                System.out.println("Chat not found.");
+            }
 
-            if (chat == null)
-                System.out.println("Chat not found");
             i--;
         } while (chat == null && i > 0);
 
         return chat;
+    }
+
+
+    private String readChatName() {
+
+        GroupChat chat = null;
+        int i = 3;
+        String name;
+        boolean validName = false;
+
+        System.out.println("What would you like to name the chat?");
+
+        do {
+            System.out.print("Enter chat name : ");
+            name = scanner.nextLine();
+
+            try {
+                chat = mainMenu.user.getChatByName(name);
+            }
+            catch (IllegalArgumentException e) {
+                // In case of IllegalArgumentException, there is no
+                // chat with the given name
+                validName = true;
+            }
+
+            if(!validName)
+                System.out.println("You already have a chat named '" + name + "'");
+
+            i--;
+        } while (!validName && i > 0);
+
+        return name;
     }
 
     private boolean listChats() {
@@ -105,12 +162,37 @@ class GroupChatMenu extends AbstractMenu {
         else
             System.out.println("You currently have " + chats.size() + " chats open:");
 
-        int i = 0;
         for (Object obj : chats) {
             GroupChat chat = (GroupChat) obj;
-            System.out.println("    " + i + " - " + chat.getName());
+            System.out.println("    - " + chat.getName() + ": " + chat.getMembers().size() + " members");
         }
 
         return true;
+    }
+
+    //TODO: Extract this method
+    private User getUser() {
+        User user;
+        int i = 3;
+
+        do {
+            System.out.print("Enter a username (leave empty to stop) : ");
+            String username = scanner.nextLine();
+
+            if(username.isEmpty()) {
+                System.out.println("Empty: ");
+                return null;
+            }
+            else {
+                System.out.println("Not empty : "  + username);
+            }
+
+            user = mainMenu.facebook.getUserByName(username);
+            if (user == null)
+                System.out.println("User not found");
+            i--;
+        } while (user == null && i > 0);
+
+        return user;
     }
 }
