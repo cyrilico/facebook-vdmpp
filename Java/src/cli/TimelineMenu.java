@@ -1,5 +1,8 @@
 package cli;
 
+import org.overture.codegen.runtime.VDMSeq;
+import vdm.User;
+
 import java.util.ArrayList;
 
 class TimelineMenu extends AbstractMenu {
@@ -15,13 +18,13 @@ class TimelineMenu extends AbstractMenu {
         printDivision("Timeline Menu");
 
         ArrayList<String> options = new ArrayList<>();
-        options.add("See My Timeline");
+        options.add("See Main Feed");
         options.add("See Timeline from other users");
 
         String input = printAndSelectOptions(options);
         switch (input) {
-            case "See My Timeline":
-                seeMyTimeline();
+            case "See Main Feed":
+                seeMainFeed();
                 break;
             case "See Timeline from other users":
                 seeTimelineByUser();
@@ -34,9 +37,14 @@ class TimelineMenu extends AbstractMenu {
         getOptions();
     }
 
-    private void seeMyTimeline() {
+    private void seeMainFeed() {
+        VDMSeq mainFeed = mainMenu.facebook.getUserFeed(mainMenu.user);
+        Utils.printPostsSEQ(mainFeed);
     }
 
     private void seeTimelineByUser() {
+        User user2 = Utils.getUser(scanner, mainMenu);
+        VDMSeq timelineByUser = mainMenu.facebook.getUserTimeline(mainMenu.user, user2);
+        Utils.printPostsSEQ(timelineByUser);
     }
 }

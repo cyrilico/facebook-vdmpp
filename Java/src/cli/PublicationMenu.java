@@ -28,6 +28,7 @@ class PublicationMenu extends AbstractMenu {
         switch (input) {
             case "See Posts":
                 seePosts();
+                break;
             case "New Post":
                 newPost();
                 break;
@@ -47,14 +48,7 @@ class PublicationMenu extends AbstractMenu {
 
     private void seePosts() {
         VDMSeq posts = mainMenu.facebook.getUserTimeline(mainMenu.user, mainMenu.user);
-        for (Object p1 : posts) {
-            Publication post = (Publication) p1;
-            System.out.println("Post " + post.getId());
-            System.out.println("Content " + post.getContent());
-            System.out.println("Date " + post.getTimestamp());
-            System.out.println("Author " + post.getAuthor().getName());
-            System.out.println("Likes " + post.getLikes());
-        }
+        Utils.printPostsSEQ(posts);
     }
 
     private void newPost() {
@@ -66,11 +60,32 @@ class PublicationMenu extends AbstractMenu {
     }
 
     private void updatePost() {
-//        mainMenu.user.updatePublicationPermissions(publicationID, newPermissions);
+        Publication post = getPost();
+        System.out.println("Current permissions: " + post.getPermissions().toString());
+        Object perms = getPermissions();
+        mainMenu.user.updatePublicationPermissions(post.getId(), perms);
     }
 
     private void deletePost() {
+        mainMenu.user.deletePublication(getPost().getId());
     }
+
+    private Publication getPost() {
+        Publication post;
+        int i = 3;
+
+        do {
+            System.out.print("Enter post's ID: ");
+            String postID = scanner.nextLine();
+            post = mainMenu.user.getPublicationById(Integer.parseInt(postID));
+            if (post == null)
+                System.out.println("Post not found");
+            i--;
+        } while (post == null && i > 0);
+
+        return post;
+    }
+
 
     private Object getPermissions() {
         Object perms = null;
