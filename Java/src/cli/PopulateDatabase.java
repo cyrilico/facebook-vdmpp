@@ -17,7 +17,6 @@ class PopulateDatabase {
     void addDatabase() {
         addUsers();
         addFriendship();
-        addBlockedUsers();
         addPosts();
         addLikes();
         addChats();
