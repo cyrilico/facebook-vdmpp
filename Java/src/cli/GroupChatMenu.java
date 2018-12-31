@@ -24,6 +24,7 @@ class GroupChatMenu extends AbstractMenu {
 
         ArrayList<String> options = new ArrayList<>();
         options.add("Create Chat");
+        options.add("List Chat");
         options.add("Send message to Chat");
         options.add("Add Friend to Chat");
         options.add("See all messages from a given Chat");
@@ -34,6 +35,9 @@ class GroupChatMenu extends AbstractMenu {
         switch (input) {
             case "Create Chat":
                 createChat();
+                break;
+            case "List Chat":
+                listChats();
                 break;
             case "Send message to Chat":
                 sendMessage();
