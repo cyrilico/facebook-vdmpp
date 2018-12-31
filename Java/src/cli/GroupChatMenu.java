@@ -3,7 +3,9 @@ package cli;
 import org.overture.codegen.runtime.VDMSet;
 import vdm.GroupChat;
 import vdm.User;
+import vdm.Date;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 class GroupChatMenu extends AbstractMenu {
@@ -55,6 +57,7 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private void createChat() {
+        System.out.println("What would you like to name the chat?");
 
         String chatName = readChatName();
 
@@ -65,7 +68,6 @@ class GroupChatMenu extends AbstractMenu {
         System.out.println("What friends would you like to add to this chat?");
 
         while(initialUsers.size() < MAX_USERS) {
-
             User user = getUser();
 
             if(user == null)
@@ -79,6 +81,19 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private void sendMessage() {
+        String chatName = selectChat().getName();
+
+        if(chatName.isEmpty())
+            return;
+
+        String content = readChatMessage();
+
+        LocalDateTime now = LocalDateTime.now();
+        Number date = Date.makeDate(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+
+        mainMenu.user.sendChatMessage(chatName, content, date);
+
+        System.out.println("Message '" + content + "' sent to " + chatName + ".");
     }
 
     private void addFriend() {
@@ -120,7 +135,6 @@ class GroupChatMenu extends AbstractMenu {
         return chat;
     }
 
-
     private String readChatName() {
 
         GroupChat chat = null;
@@ -128,7 +142,6 @@ class GroupChatMenu extends AbstractMenu {
         String name;
         boolean validName = false;
 
-        System.out.println("What would you like to name the chat?");
 
         do {
             System.out.print("Enter chat name : ");
@@ -144,7 +157,7 @@ class GroupChatMenu extends AbstractMenu {
             }
 
             if(!validName)
-                System.out.println("You already have a chat named '" + name + "'");
+                System.out.println("Found a chat named '" + name + "'");
 
             i--;
         } while (!validName && i > 0);
@@ -179,13 +192,8 @@ class GroupChatMenu extends AbstractMenu {
             System.out.print("Enter a username (leave empty to stop) : ");
             String username = scanner.nextLine();
 
-            if(username.isEmpty()) {
-                System.out.println("Empty: ");
+            if(username.isEmpty())
                 return null;
-            }
-            else {
-                System.out.println("Not empty : "  + username);
-            }
 
             user = mainMenu.facebook.getUserByName(username);
             if (user == null)
@@ -194,5 +202,10 @@ class GroupChatMenu extends AbstractMenu {
         } while (user == null && i > 0);
 
         return user;
+    }
+
+    private String readChatMessage() {
+        System.out.print("Enter message content: ");
+        return scanner.nextLine();
     }
 }
