@@ -2,6 +2,7 @@ package cli;
 
 import org.overture.codegen.runtime.VDMSeq;
 import org.overture.codegen.runtime.VDMSet;
+import vdm.Date;
 import vdm.Publication;
 import vdm.User;
 
@@ -23,6 +24,21 @@ public class Utils {
         } while (user == null && i > 0);
 
         return user;
+    }
+
+    static Number getDate(Scanner scanner, MainMenu mainMenu) {
+        Number year, month, day;
+
+        do {
+            System.out.print("Enter year: ");
+            year = Integer.parseInt(scanner.nextLine());
+            System.out.print("Enter month: ");
+            month = Integer.parseInt(scanner.nextLine());
+            System.out.print("Enter day: ");
+            day = Integer.parseInt(scanner.nextLine());
+        } while (!Date.isValidDate(year, month, day));
+
+        return Date.makeDate(year, month, day);
     }
 
     private static void printUser(User u1) {
