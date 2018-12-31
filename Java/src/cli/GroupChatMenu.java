@@ -3,9 +3,9 @@ package cli;
 import org.overture.codegen.runtime.VDMSeq;
 import org.overture.codegen.runtime.VDMSet;
 import vdm.ChatMessage;
+import vdm.Date;
 import vdm.GroupChat;
 import vdm.User;
-import vdm.Date;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,10 +69,10 @@ class GroupChatMenu extends AbstractMenu {
 
         System.out.println("What friends would you like to add to this chat?");
 
-        while(initialUsers.size() < MAX_USERS) {
+        while (initialUsers.size() < MAX_USERS) {
             User user = getUser();
 
-            if(user == null)
+            if (user == null)
                 break;
 
             initialUsers.add(user);
@@ -85,7 +85,7 @@ class GroupChatMenu extends AbstractMenu {
     private void sendMessage() {
         String chatName = selectChat().getName();
 
-        if(chatName.isEmpty())
+        if (chatName.isEmpty())
             return;
 
         String content = readChatContent();
@@ -115,7 +115,7 @@ class GroupChatMenu extends AbstractMenu {
         // but Java doesn't allow dynamic overloading
         VDMSeq messages = chat.getMessagesBetween(Date.minimumDate, Date.maximumDate);
 
-        System.out.println("\nAll messages from chat '" + chat.getName()+ "': \n");
+        System.out.println("\nAll messages from chat '" + chat.getName() + "': \n");
 
         for (Object obj : messages) {
             ChatMessage message = (ChatMessage) obj;
@@ -128,12 +128,12 @@ class GroupChatMenu extends AbstractMenu {
         String content = readChatContent();
         VDMSeq messages = chat.getMessagesWithText(content);
 
-        if(messages.isEmpty()) {
+        if (messages.isEmpty()) {
             System.out.println("No messages found!");
             return;
         }
 
-        System.out.println("\nMessages from chat '" + chat.getName()+ "' with the content '" + content + "': \n");
+        System.out.println("\nMessages from chat '" + chat.getName() + "' with the content '" + content + "': \n");
 
         for (Object obj : messages) {
             ChatMessage message = (ChatMessage) obj;
@@ -152,12 +152,12 @@ class GroupChatMenu extends AbstractMenu {
 
         VDMSeq messages = chat.getMessagesBetween(beginDate, endDate);
 
-        if(messages.isEmpty()) {
+        if (messages.isEmpty()) {
             System.out.println("No messages found!");
             return;
         }
 
-        System.out.println("\nMessages from chat '" + chat.getName()+ "': \n");
+        System.out.println("\nMessages from chat '" + chat.getName() + "': \n");
 
         for (Object obj : messages) {
             ChatMessage message = (ChatMessage) obj;
@@ -166,7 +166,7 @@ class GroupChatMenu extends AbstractMenu {
     }
 
     private GroupChat selectChat() {
-        if(!listChats())
+        if (!listChats())
             return null;
 
         System.out.println("Which chat would you like to choose ?");
@@ -179,8 +179,7 @@ class GroupChatMenu extends AbstractMenu {
 
             try {
                 chat = mainMenu.user.getChatByName(option);
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Chat not found.");
             }
 
@@ -204,14 +203,13 @@ class GroupChatMenu extends AbstractMenu {
 
             try {
                 chat = mainMenu.user.getChatByName(name);
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 // In case of IllegalArgumentException, there is no
                 // chat with the given name
                 validName = true;
             }
 
-            if(!validName)
+            if (!validName)
                 System.out.println("Found a chat named '" + name + "'");
 
             i--;
@@ -223,11 +221,10 @@ class GroupChatMenu extends AbstractMenu {
     private boolean listChats() {
         VDMSet chats = mainMenu.user.getChats();
 
-        if(chats.size() == 0) {
+        if (chats.size() == 0) {
             System.out.println("You don't have any open chats. Going back...");
             return false;
-        }
-        else
+        } else
             System.out.println("You currently have " + chats.size() + " chats open:");
 
         for (Object obj : chats) {
@@ -247,7 +244,7 @@ class GroupChatMenu extends AbstractMenu {
             System.out.print("Enter a username (leave empty to stop) : ");
             String username = scanner.nextLine();
 
-            if(username.isEmpty())
+            if (username.isEmpty())
                 return null;
 
             user = mainMenu.facebook.getUserByName(username);
