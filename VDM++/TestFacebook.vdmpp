@@ -61,17 +61,47 @@ operations
 				facebook := Facebook`clearInstance();
 				setupUsers();
 				
-				facebook.addUsers({u1,u2,u3,u4});
-				facebook.addFriendship(u1,u2);
-				facebook.addFriendship(u2,u3);
-				u1.makePublication("boas tudo bem", 20181221, <Public>);
-				u1.makePublication("not for you", 20181221, <Friends>);
-				u2.makePublication("boazz", 20181201, <Friends>);
 				
-				assertTrue(len facebook.getUserFeed(u1) = 1);
-				assertTrue(len facebook.getUserFeed(u2) = 2);
-				assertTrue(len facebook.getUserFeed(u3) = 1);
-				assertTrue(len facebook.getUserFeed(u4) = 0);
+				facebook.addUsers({u1,u2,u3,u4,u5,u6,u7});
+				
+				-- set up some friendships
+				facebook.addFriendship(u1,u2);
+				facebook.addFriendship(u1,u3);
+				facebook.addFriendship(u2,u4);
+				facebook.addFriendship(u4,u5);
+				
+				-- create publications
+				u1.makePublication("greetings, eager young minds", Date`makeDate(2016,2,29), <TransitiveConnection>); --ID 1 | Will show up to u2,u3 (friends), u4 (friend liked)
+				u1.makePublication("greetings, friends", Date`makeDate(2016,12,13), <Friends>); --ID 2 | Will show up to u2,u3 (friends); u2 liked but will not show up to u4 because it is friends only
+				u2.makePublication("fear me, friends, for i am back", Date`makeDate(2016,2,29), <Public>); --ID 3 | Will show up to u1, u4 (friends), u3 (friend liked)
+				u2.makePublication("back, looking for new friendships", Date`makeDate(2017,01,01), <FriendsOfFriends>); --ID 4 | Will show up to u4 (friend), u5 (friend liked)
+				u3.makePublication("what do i need friends for? popularity, of course", Date`makeDate(2018,01,13), <Friends>); --ID 5 | Will show up to u1 (friend)
+				u3.makePublication("what's up my dudes it's 2019", Date`makeDate(2019,1,1), <Public>); -- ID 6 | Will show up to u1 (friend), u4 (friend liked) 
+				
+				-- add some likes
+				facebook.likePublication(u2, 1);
+				facebook.likePublication(u3, 1);
+				facebook.likePublication(u2, 2);
+				facebook.likePublication(u1, 3);
+				facebook.likePublication(u4, 4);
+				facebook.likePublication(u5, 6);
+				
+				-- Recall score formula: (1+#likes)*(1+#likesFromFriends)*(if authorIsFriend 2 else 1)
+				
+				-- Feed from u3's perspective
+				-- Publication 1's score: (1+2)*(1+1)*(2) = 12
+				-- Publication 2's score: (1+1)*(1+0)*(2) = 4
+				-- Publication 3's score: (1+1)*(1+1)*(1) = 4
+				-- Order then is 1, 2, 3 (2 has a more recent timestamp than 3)
+				assertEqual(facebook.getUserFeed(u3), [u1.getPublicationById(1), u1.getPublicationById(2), u2.getPublicationById(3)]);
+				
+				-- Feed from u4's perspective
+				-- Publication 1's score: (1+2)*(1+1)*(1) = 6
+				-- Publication 3's score: (1+1)*(1+0)*(2) = 4
+				-- Publication 4's score: (1+1)*(1+0)*(2) = 4
+				-- Publication 6's score: (1+1)*(1+1)*(0) = 4
+				-- Order is then 1, 6, 4, 3 (regarding timestamps, 6 > 4 > 3)
+				assertEqual(facebook.getUserFeed(u4), [u1.getPublicationById(1), u3.getPublicationById(6), u2.getPublicationById(4), u2.getPublicationById(3)]);
 			);
 		
 		-- Test scenario where users receive potential friend suggestions

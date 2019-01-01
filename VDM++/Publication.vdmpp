@@ -96,7 +96,7 @@ operations
  	public calculateScore: User ==> rat
  			calculateScore(user) == (
  				-- Criteria: Number of likes, boosted by number of likes from friends and possibly fact that author is a friend
- 				return card likes * (1 + card (likes inter user.friends)) * (if user in set author.friends then 2 else 1); 
+ 				return (1 + card likes) * (1 + card (likes inter user.friends)) * (if user in set author.friends then 2 else 1); 
  			)
  			pre user <> author
  			post RESULT >= 0;

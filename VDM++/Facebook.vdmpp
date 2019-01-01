@@ -184,7 +184,7 @@ operations
 			post forall i in set inds RESULT & RESULT(i).userHasPermissions(user); -- User has access to all publications recommended
 	
 	-- Retrieves common friends between two users
-	public getCommonFriends: User * User ==> set of User
+	protected getCommonFriends: User * User ==> set of User
 			getCommonFriends(user1, user2) == return user1.friends inter user2.friends
 			pre {user1, user2} subset users and user1 <> user2
 			post RESULT subset user1.friends and RESULT subset user2.friends;
@@ -243,10 +243,10 @@ functions
 	-- Compare 2 publications based on their score and timestamp for tie break. Used in sorting publications for main feed
 	-- IN p1 first publication
 	-- IN p2 second publication
-	-- OUT true if first publication is to come first, false otherwise
+	-- OUT true if first publication is to come after, false otherwise
 	protected comparePublications: PublicationRank * PublicationRank +> bool
 		comparePublications(p1, p2) == (
-			p1.score > p2.score or p1.score = p2.score and p1.publication.getTimestamp() > p2.publication.getTimestamp()
+			p1.score < p2.score or p1.score = p2.score and p1.publication.getTimestamp() < p2.publication.getTimestamp()
 		);
 
 	-- Compare 2 users based on their score and name length for tie break. Used in sorting people for friend suggestions
