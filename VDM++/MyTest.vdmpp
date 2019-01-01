@@ -1,4 +1,4 @@
-class Test
+class MyTest
 types
 values
 instance variables
@@ -42,4 +42,4 @@ operations
 			)
 	post expected = actual
 traces
-end Test
+end MyTest

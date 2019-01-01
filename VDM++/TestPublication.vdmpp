@@ -1,4 +1,4 @@
-class TestPublication is subclass of Test
+class TestPublication is subclass of MyTest
 
 instance variables
 	
@@ -28,7 +28,7 @@ operations
 			u3.makePublication("what do i need friends for? popularity, of course", Date`makeDate(2018,01,13), <Friends>); --ID 5
 			
 			-- search from different user's perspectives
-			assertEqual(facebook.searchPublications(u6, "greetings"), {u1.getPublicationById(1)}); -- Publications ID 1 and 2 have text. 1 was found by friends' closure, but 2 is restricted to u2's friends
+			assertEqual(facebook.searchPublications(u6, "greetings"), {u1.getPublicationById(1)}); -- Publications ID 1 and 2 have the search text. 1 was found by friends' closure, but 2 is restricted to u2's friends
 			u1.blockUser(u6);			
 			assertEqual(facebook.searchPublications(u6, "greetings"), {}); -- Blocked by u1, so now can't see the publication found earlier
 			
@@ -113,6 +113,9 @@ operations
 			
 			assertEqual(u1.getPublicationById(1).getLikes(), {u3,u6});
 			assertEqual(card u1.getPublicationById(3).getLikes(), 0);
+			
+			-- failing code (user tries to like a publication he does not have access to)
+			--facebook.likePublication(u6, 2);
 		);
 		
 	public Run: () ==> ()

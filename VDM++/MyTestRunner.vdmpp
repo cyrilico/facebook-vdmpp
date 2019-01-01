@@ -1,16 +1,14 @@
-class TestRunner
+class MyTestRunner
 
 operations
 	public static main: () ==> ()
 		main() == (
-			IO`println("\nRunning tests\n");
-			
+			IO`println("Running tests\n");
 	    new TestGroupChat().Run();
 	    new TestPublication().Run();
 	    new TestUser().Run();
 	    new TestFacebook().Run();
-	    
-	    IO`println("\nTests ran successfully\n");
+	    IO`println("Tests ran successfully\n");
 		);
 	
-end TestRunner
+end MyTestRunner

@@ -230,6 +230,7 @@ operations
 			blockUser(userBlocked) == (
 				blocked := blocked union {userBlocked};
 			)
+			pre userBlocked in set Facebook`getInstance().getUsers()
 			post card blocked = card blocked~ + 1;
 	
 	-- Unblock a previously blocked user (guaranteed by precondition)

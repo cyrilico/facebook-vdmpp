@@ -184,7 +184,7 @@ operations
 			post forall i in set inds RESULT & RESULT(i).userHasPermissions(user); -- User has access to all publications recommended
 	
 	-- Retrieves common friends between two users
-	public getCommonFriends: User * User ==> set of User
+	protected getCommonFriends: User * User ==> set of User
 			getCommonFriends(user1, user2) == return user1.friends inter user2.friends
 			pre {user1, user2} subset users and user1 <> user2
 			post RESULT subset user1.friends and RESULT subset user2.friends;
@@ -203,7 +203,7 @@ operations
 				dcl sortedSuggestions : seq of User := [];
 				
 				for all suggestion in set unsortedSuggestions do
-					scoredSuggestions := scoredSuggestions ^ [mk_UserRank(suggestion, card getCommonFriends(user, suggestion))];
+					scoredSuggestions := [mk_UserRank(suggestion, card getCommonFriends(user, suggestion))] ^ scoredSuggestions;
 				
 				sortedSuggestions := sortSuggestions(scoredSuggestions);
 				
@@ -218,9 +218,7 @@ operations
 				dcl sorted_list: seq of PublicationRank := publications;
 				for i = len publications to 1 by -1 do 
 					for j = 1 to i-1 do 
-						if sorted_list(j).score > sorted_list(j+1).score 
- 							 or sorted_list(j).score = sorted_list(j+1).score
- 							 and sorted_list(j).publication.getTimestamp() > sorted_list(j+1).publication.getTimestamp() then 
+						if comparePublications(sorted_list(j), sorted_list(j+1)) then 
 							(dcl temp: PublicationRank := sorted_list(j); 
 							sorted_list(j) := sorted_list(j+1); 
 							sorted_list(j+1) := temp
@@ -234,9 +232,7 @@ operations
 			dcl sorted_list: seq of UserRank := suggestions;
 			for i = len suggestions to 1 by -1 do 
 				for j = 1 to i-1 do 
-					if sorted_list(j).score < sorted_list(j+1).score 
- 						 or sorted_list(j).score = sorted_list(j+1).score
- 						 and sorted_list(j).user.getNameLength() > sorted_list(j+1).user.getNameLength() then 
+					if compareUsers(sorted_list(j), sorted_list(j+1)) then 
 						(dcl temp: UserRank := sorted_list(j); 
 						sorted_list(j) := sorted_list(j+1); 
 						sorted_list(j+1) := temp
@@ -245,5 +241,22 @@ operations
 			); 
 			
 functions
+	-- Compare 2 publications based on their score and timestamp for tie break. Used in sorting publications for main feed
+	-- IN p1 first publication
+	-- IN p2 second publication
+	-- OUT true if first publication is to come after, false otherwise
+	protected comparePublications: PublicationRank * PublicationRank +> bool
+		comparePublications(p1, p2) == (
+			p1.score < p2.score or p1.score = p2.score and p1.publication.getTimestamp() < p2.publication.getTimestamp()
+		);
+
+	-- Compare 2 users based on their score and name length for tie break. Used in sorting people for friend suggestions
+	-- IN u1 first user
+	-- IN u2 second user
+	-- OUT true if first user comes first, false otherwise	
+	protected compareUsers: UserRank * UserRank +> bool
+		compareUsers(u1, u2) == (
+			u1.score < u2.score or u1.score = u2.score and u1.user.getNameLength() < u2.user.getNameLength()
+		);
 traces
 end Facebook

@@ -1,4 +1,4 @@
-class TestUser is subclass of Test
+class TestUser is subclass of MyTest
 
 instance variables
 	
@@ -37,6 +37,9 @@ operations
 				assertEqual(u2.getFriends(), {u5});
 				assertEqual(u1.getFriendsOfFriends(), {u3,u4,u6});
 				assertEqual(u1.getFriendsTransitiveClosure(), {u3,u4,u6,u7,u8});
+				
+				-- failing code (friendship between a user in the platform and a user not in the platform)
+				--facebook.addFriendship(u1,u9);
 			);
 
 		-- Test scenario where users add other users to their blocked users list
@@ -69,6 +72,10 @@ operations
 				assertEqual(card u1.getBlockedUsers(), 1);
 				assertTrue(u2 not in set u1.getBlockedUsers());
 				assertTrue(u4 not in set u1.getBlockedUsers());
+				
+				-- failing code (blocking a user that is currently a friend)
+				--facebook.addFriendship(u1,u2);
+				--u1.blockUser(u2);
 			);
 			
 		-- Test scenario where a user checks other users' timeline
@@ -78,6 +85,32 @@ operations
 				facebook := Facebook`clearInstance();
 				setupUsers();
 				
+				
+				facebook.addUsers({u1,u2,u3,u4,u5,u6,u7,u8});
+				
+				-- set up some friendships
+				facebook.addFriendship(u1,u2);
+				facebook.addFriendship(u1,u3);
+				facebook.addFriendship(u2,u4);
+				facebook.addFriendship(u4,u5);
+				facebook.addFriendship(u5,u6);
+				
+				-- block a user
+				u1.blockUser(u7);
+				
+				-- create publications
+				u1.makePublication("greetings, eager young minds", Date`makeDate(2016,12,12), <TransitiveConnection>); --ID 1
+				u1.makePublication("greetings, friends", Date`makeDate(2016,12,13), <Friends>); --ID 2
+				u1.makePublication("fear me, friends, for i am back", Date`makeDate(2017,12,17), <Public>); --ID 3
+				u1.makePublication("back, looking for new friendships", Date`makeDate(2018,01,01), <FriendsOfFriends>); --ID 4
+				u1.makePublication("what do i need friends for? popularity, of course", Date`makeDate(2018,01,13), <Friends>); --ID 5
+				
+				assertEqual(len facebook.getUserTimeline(u1, u1), 5); -- Author always has full access to his timeline
+				assertEqual(len facebook.getUserTimeline(u2, u1), 5); -- u2 is u1's friend so has full access to his timeline too
+				assertEqual(facebook.getUserTimeline(u4, u1), [u1.getPublicationById(4),u1.getPublicationById(3),u1.getPublicationById(1)]); -- u4 only a friend of a friend, so does not have access to publications 2 and 5
+				assertEqual(facebook.getUserTimeline(u5, u1), [u1.getPublicationById(3),u1.getPublicationById(1)]); -- u5 is only reachable through friends transitive closure (u1->u2->u4->u5), so does not have access to posts 5, 4 and 2
+				assertEqual(facebook.getUserTimeline(u8, u1), [u1.getPublicationById(3)]); -- u8 has no connection whatsoever to u1, so only sees public post
+				assertEqual(len facebook.getUserTimeline(u7, u1), 0); -- u7 is blocked by u1, so can't see any of his publications
 			);
 	public Run: () ==> ()
 			Run() == (

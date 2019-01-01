@@ -1,4 +1,4 @@
-class TestGroupChat is subclass of Test
+class TestGroupChat is subclass of MyTest
 
 instance variables
 operations			
@@ -38,6 +38,12 @@ operations
 			assertEqual(card u1.getChatByName("i hate eclipse").getMembers(), 3);
 			assertTrue(u2 not in set u1.getChatByName("i hate eclipse").getMembers()); --u2 left the chat
 			assertEqual(card u2.getChats(), 0); --u2 is no longer in any group chat
+			
+			-- failing code (user tries to add a non-friend to a group chat)
+			--u1.addFriendToChat(u5, "i hate eclipse");
+			
+			-- failing code (user tries to send message to a chat he's not in)
+			--u1.sendChatMessage("by myself", "hello", Date`makeDate(2019,12,31));
 		);
 
 	-- Test scenario where chat messages are looked up by their content or filtered by their date
@@ -101,6 +107,9 @@ operations
 			actual := u2.searchTextInChat("superior users", "let's");
 			expected := [chat.getMessageById(1),chat.getMessageById(3),chat.getMessageById(10),chat.getMessageById(14)];
 			assertTrue(len actual = len expected and forall i in set inds actual & actual(i) = expected(i));
+			
+			-- failing code (user tries to search in chat he's not in)
+			--u1.searchTextInChat("superior users", "game");
 		);
 		
 	public Run: () ==> ()
