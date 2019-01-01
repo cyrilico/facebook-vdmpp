@@ -203,7 +203,7 @@ operations
 				dcl sortedSuggestions : seq of User := [];
 				
 				for all suggestion in set unsortedSuggestions do
-					scoredSuggestions := scoredSuggestions ^ [mk_UserRank(suggestion, card getCommonFriends(user, suggestion))];
+					scoredSuggestions := [mk_UserRank(suggestion, card getCommonFriends(user, suggestion))] ^ scoredSuggestions;
 				
 				sortedSuggestions := sortSuggestions(scoredSuggestions);
 				
@@ -255,7 +255,7 @@ functions
 	-- OUT true if first user comes first, false otherwise	
 	protected compareUsers: UserRank * UserRank +> bool
 		compareUsers(u1, u2) == (
-			u1.score < u2.score or u1.score = u2.score and u1.user.getNameLength() > u2.user.getNameLength()
+			u1.score < u2.score or u1.score = u2.score and u1.user.getNameLength() < u2.user.getNameLength()
 		);
 traces
 end Facebook
