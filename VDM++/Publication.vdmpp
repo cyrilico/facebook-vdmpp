@@ -66,7 +66,8 @@ operations
   			<FriendsOfFriends> -> return user in set author.getFriendsOfFriends() union {author} \ author.getBlockedUsers(),
   			others -> return user in set author.getFriendsTransitiveClosure() union {author} \ author.getBlockedUsers() -- permissions = <TransitiveConnection>
   			end
-  		);
+  		)
+  		pre user in set Facebook`getInstance().getUsers();
   
   -- Getter for users that liked publication
   pure public getLikes: () ==> set of User
