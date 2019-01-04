@@ -74,8 +74,8 @@ public class Utils {
     }
 
     private static void printPost(Publication p1) {
-        System.out.println("Post " + p1.getId() + "| Author: " + p1.getAuthor().getName() + "| Date: " + p1.getTimestamp() + "| Likes: " + p1.getLikes().size());
-        System.out.println("Content " + p1.getContent());
+        System.out.println("Post #" + p1.getId() + " | Author: " + p1.getAuthor().getName() + " | Date: " + p1.getTimestamp() + " | Likes: " + p1.getLikes().size());
+        System.out.println("Content: " + p1.getContent() + "\n");
     }
 
     static void printPostsSET(VDMSet posts) {

@@ -42,10 +42,11 @@ class SearchMenu extends AbstractMenu {
         VDMSet users = mainMenu.facebook.searchUser(searchText);
 
         if (users.isEmpty()) {
-            System.out.println("Users not found!");
+            System.out.println("\nUsers not found!");
             return;
         }
 
+        System.out.println("\nResults for users matching '" + searchText + "':\n");
         Utils.printUsersSET(users);
     }
 
@@ -55,10 +56,11 @@ class SearchMenu extends AbstractMenu {
         VDMSet posts = mainMenu.facebook.searchPublications(mainMenu.user, searchText);
 
         if (posts.isEmpty()) {
-            System.out.println("Posts not found!");
+            System.out.println("\nPosts not found!");
             return;
         }
 
+        System.out.println("\nResults for posts matching '" + searchText + "':\n");
         Utils.printPostsSET(posts);
     }
 

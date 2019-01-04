@@ -47,10 +47,13 @@ class PublicationMenu extends AbstractMenu {
 
     private void seePosts() {
         VDMSeq posts = mainMenu.facebook.getUserTimeline(mainMenu.user, mainMenu.user);
+
+        System.out.println("\n" + mainMenu.user.getName() + "'s posts: \n");
         Utils.printPostsSEQ(posts);
     }
 
     private void newPost() {
+        System.out.println("\n Creating new post \n");
         String content = getContent();
         Number date = Utils.getDate(scanner);
         Object perms = getPermissions();
@@ -59,6 +62,7 @@ class PublicationMenu extends AbstractMenu {
     }
 
     private void updatePost() {
+        System.out.println("\n Updating a post \n");
         Publication post = Utils.getPost(scanner, mainMenu);
         System.out.println("Current permissions: " + post.getPermissions().toString());
         Object perms = getPermissions();
@@ -66,6 +70,7 @@ class PublicationMenu extends AbstractMenu {
     }
 
     private void deletePost() {
+        System.out.println("\n Deleting a post \n");
         mainMenu.user.deletePublication(Utils.getPost(scanner, mainMenu).getId());
     }
 

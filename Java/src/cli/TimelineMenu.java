@@ -48,12 +48,16 @@ class TimelineMenu extends AbstractMenu {
 
     private void seeMainFeed() {
         VDMSeq mainFeed = mainMenu.facebook.getUserFeed(mainMenu.user);
+
+        System.out.println(mainMenu.user.getName() + "'s main feed: \n");
         Utils.printPostsSEQ(mainFeed);
     }
 
     private void seeTimelineByUser() {
         User user2 = Utils.getUser(scanner, mainMenu);
         VDMSeq timelineByUser = mainMenu.facebook.getUserTimeline(mainMenu.user, user2);
+
+        System.out.println(mainMenu.user.getName() + "'s timeline: \n");
         Utils.printPostsSEQ(timelineByUser);
     }
 

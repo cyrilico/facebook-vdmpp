@@ -61,40 +61,47 @@ class FriendsMenu extends AbstractMenu {
 
 
     private void addFriends() {
+        System.out.println("\nAdding a friend\n");
         User user2 = Utils.getUser(scanner, mainMenu);
         if (user2 == null) return;
         mainMenu.facebook.addFriendship(mainMenu.user, user2);
     }
 
     private void removeFriends() {
+        System.out.println("\nRemoving a friend\n");
         User user2 = Utils.getUser(scanner, mainMenu);
         if (user2 == null) return;
         mainMenu.facebook.removeFriendship(mainMenu.user, user2);
     }
 
     private void blockUser() {
+        System.out.println("\nBlocking a user\n");
         User user2 = Utils.getUser(scanner, mainMenu);
         if (user2 == null) return;
         mainMenu.user.blockUser(user2);
     }
 
     private void unblockUser() {
+        System.out.println("\nUnblocking a user\n");
         User user2 = Utils.getUser(scanner, mainMenu);
         if (user2 == null) return;
         mainMenu.user.unblockUser(user2);
     }
 
     private void listFriendsSuggestions() {
+        System.out.println("\n" + mainMenu.user.getName() + "'s friend suggestions\n");
         VDMSeq friendSuggestions = mainMenu.facebook.getFriendSuggestions(mainMenu.user);
         Utils.printUsersSEQ(friendSuggestions);
     }
 
     private void listFriends() {
+        System.out.println("\n" + mainMenu.user.getName() + "'s friends\n");
         VDMSet friends = mainMenu.user.getFriends();
         Utils.printUsersSET(friends);
     }
 
     private void listBlockedUsers() {
+        System.out.println("\n" + mainMenu.user.getName() + "'s blocked users\n");
         VDMSet blockedUsers = mainMenu.user.getBlockedUsers();
         Utils.printUsersSET(blockedUsers);
     }

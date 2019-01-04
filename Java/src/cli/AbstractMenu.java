@@ -30,7 +30,7 @@ abstract class AbstractMenu {
 
     private void printOptions(ArrayList<String> options) {
         for (int i = 0; i < options.size(); i++) {
-            System.out.println((i + 1) + "- " + options.get(i));
+            System.out.println((i + 1) + " - " + options.get(i));
         }
 
         if (hasParent) {
